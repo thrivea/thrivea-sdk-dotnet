@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+    <RootNamespace>Thrivea</RootNamespace>
+    <AssemblyName>Thrivea.Sdk</AssemblyName>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Package">
+    <PackageId>Thrivea.Sdk</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Thrivea d.o.o.</Authors>
+    <Company>Thrivea d.o.o.</Company>
+    <Product>Thrivea</Product>
+    <Title>Thrivea SDK for .NET</Title>
+    <Description>Official .NET client for the Thrivea public REST API (/v1): job openings, candidate applications, employees, org units, cost centers and webhooks. Stripe-style services, TypeID identifiers, typed errors, cursor paging and retries.</Description>
+    <PackageTags>thrivea;hris;hr;ats;recruiting;api;sdk;client;rest</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/thrivea/thrivea-sdk-dotnet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/thrivea/thrivea-sdk-dotnet</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>See CHANGELOG.md in the repository.</PackageReleaseNotes>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
+    <PackageReference Include="PolySharp" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Text.Json" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Thrivea.Sdk.Tests" />
+  </ItemGroup>
+
+</Project>
