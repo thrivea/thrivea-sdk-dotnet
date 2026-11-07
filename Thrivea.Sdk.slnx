@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Thrivea.Sdk/Thrivea.Sdk.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Thrivea.Sdk.Tests/Thrivea.Sdk.Tests.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/Thrivea.Sdk.Samples.Careers/Thrivea.Sdk.Samples.Careers.csproj" />
+  </Folder>
+</Solution>
