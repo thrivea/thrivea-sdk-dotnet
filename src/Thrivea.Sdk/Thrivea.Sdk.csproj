@@ -16,7 +16,7 @@
     <Product>Thrivea</Product>
     <Title>Thrivea SDK for .NET</Title>
     <Description>Official .NET client for the Thrivea public REST API (/v1): job openings, candidate applications, employees, org units, cost centers and webhooks. Stripe-style services, TypeID identifiers, typed errors, cursor paging and retries.</Description>
-    <PackageTags>thrivea;hris;hr;ats;recruiting;api;sdk;client;rest</PackageTags>
+    <PackageTags>thrivea;hris;hr;hiring;recruiting;api;sdk;client;rest</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/thrivea/thrivea-sdk-dotnet</PackageProjectUrl>
     <RepositoryUrl>https://github.com/thrivea/thrivea-sdk-dotnet</RepositoryUrl>
