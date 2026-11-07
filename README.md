@@ -263,6 +263,12 @@ version changes only with the API's.
 | `CostCenters` | list, get, create, update |
 | `WebhookEndpoints` | list, get, create, update, delete, event types |
 
+## The contract
+
+`openapi/thrivea-v1.openapi.json` is the API's OpenAPI document as the backend exports it. `OpenApiConformanceTests`
+checks every route, field, enum value and header the SDK uses against it, and a nightly workflow compares the copy with
+what the development host serves. See `openapi/README.md`.
+
 ## Development
 
 ```shell

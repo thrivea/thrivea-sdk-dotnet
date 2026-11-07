@@ -1,0 +1,64 @@
+# Nightly: does the API the dev host describes still match the contract this SDK is tested against? When not, one
+# issue (label openapi-drift) says what changed, so the SDK follows the API before a customer notices.
+name: OpenAPI drift
+
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Fetch the document the dev host serves
+        run: |
+          for attempt in 1 2 3; do
+            curl -fsS -H 'Accept: application/json' --max-time 60 https://api-dev.thrivea.com/swagger/public/swagger.json -o live.json || true
+            [ -s live.json ] && break
+            echo "empty answer, attempt $attempt"; sleep 20
+          done
+          [ -s live.json ] || { echo "the dev host served no document"; exit 1; }
+      - name: Compare with the vendored copy
+        id: diff
+        run: |
+          jq -S 'del(.servers)' openapi/thrivea-v1.openapi.json > vendored.norm.json
+          jq -S 'del(.servers)' live.json > live.norm.json
+          if diff -u vendored.norm.json live.norm.json > drift.diff; then
+            echo "drift=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "drift=true" >> "$GITHUB_OUTPUT"
+            head -c 60000 drift.diff > drift.trimmed.diff
+          fi
+      - name: Open or update the drift issue
+        if: steps.diff.outputs.drift == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "The public API the dev host serves differs from \`openapi/thrivea-v1.openapi.json\`, the contract this SDK is tested against."
+            echo
+            echo "Re-export in the backend (\`make public-api-openapi-export\`), copy the file here, run the tests, and release the SDK version that follows."
+            echo
+            echo '```diff'
+            cat drift.trimmed.diff
+            echo '```'
+          } > body.md
+          number=$(gh issue list --label openapi-drift --state open --json number --jq '.[0].number')
+          if [ -n "$number" ]; then
+            gh issue edit "$number" --body-file body.md
+          else
+            gh issue create --title "OpenAPI drift: the dev host's public API differs from the vendored contract" --label openapi-drift --body-file body.md
+          fi
+      - name: Close the drift issue when the copies agree again
+        if: steps.diff.outputs.drift == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          number=$(gh issue list --label openapi-drift --state open --json number --jq '.[0].number')
+          [ -n "$number" ] && gh issue close "$number" --comment "The vendored contract matches the dev host again." || true
