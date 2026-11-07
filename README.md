@@ -10,7 +10,7 @@ and webhooks that Thrivea's screens use.
 - One service per resource, Stripe-style: `client.JobOpenings.ListAsync()`, `client.CandidateApplications.CreateAsync(…)`.
 - Prefixed identifiers (`job_01h2xcejqtf2nbrexx3vqjhp41`) checked before a request leaves, with `TypeId` to parse them.
 - Typed exceptions per API error, retries with backoff for what is safe to retry, cursor paging with auto-paging.
-- Targets `netstandard2.0` and `net8.0`: .NET Framework 4.6.2+, .NET 6/8/10, Umbraco, ASP.NET Core, console apps.
+- Targets `netstandard2.0` and `net8.0`: .NET Framework 4.6.2+, .NET 6/8/10, ASP.NET Core, console apps, any CMS on .NET.
 
 ## Install
 
@@ -65,8 +65,8 @@ directory even if it leaks.
 
 ## A careers website, end to end
 
-The pattern Thrivea built the ATS resources for: your CMS is the author of the job ad, Thrivea is the applicant
-tracking system behind it.
+The pattern the Hiring resources were built for: your website or CMS is the author of the job ad, Thrivea Hiring
+tracks the applicants behind it.
 
 ```csharp
 // 1. When an ad is written, find the Thrivea job it belongs to or create one, and store the id on the ad.
@@ -161,7 +161,7 @@ Reads and deletes are retried after a network failure, a `409`, a `429` or a `5x
 await client.CandidateApplications.CreateAsync(options, new RequestOptions { IdempotencyKey = form.SubmissionId });
 ```
 
-The ATS resources are also idempotent by their own `external_ref` and by candidate and job, so a retried create never
+The Hiring resources are also idempotent by their own `external_ref` and by candidate and job, so a retried create never
 makes a second job opening or application.
 
 ## Paging
@@ -221,7 +221,7 @@ if (webhookEvent.Type == WebhookEventTypes.EmployeeCreated)
 Answer `2xx` within 10 seconds and do the work afterwards; deliveries are at least once, so ignore an `Id` you have
 already processed.
 
-## Dependency injection (ASP.NET Core, Umbraco)
+## Dependency injection (ASP.NET Core)
 
 ```csharp
 builder.Services.AddSingleton(new ThriveaClientOptions { ApiKey = builder.Configuration["Thrivea:ApiKey"]! });

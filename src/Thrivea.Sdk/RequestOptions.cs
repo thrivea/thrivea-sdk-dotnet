@@ -5,7 +5,7 @@ public sealed class RequestOptions
 {
     /// <summary>
     ///     Sent as the <c>Idempotency-Key</c> header. Give a <c>POST</c> one (a GUID you store with the thing you are
-    ///     creating) and the SDK may safely retry it after a network failure. The ATS resources are also idempotent by
+    ///     creating) and the SDK may safely retry it after a network failure. The Hiring resources (job openings, candidate applications) are also idempotent by
     ///     their own <c>external_ref</c>, so a retried create never makes a second job opening or application.
     /// </summary>
     public string? IdempotencyKey { get; set; }
