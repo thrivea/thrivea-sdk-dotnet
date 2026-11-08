@@ -5719,16 +5719,32 @@
               "format": "guid"
             }
           },
+          "manager_ids": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "format": "guid"
+            }
+          },
+          "employee_ids": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "format": "guid"
+            }
+          },
           "managers_criteria": {
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/PeopleCriteria"
+                "$ref": "#/components/schemas/PeopleCriteriaResource"
               }
             ]
           },
           "employees_criteria": {
-            "$ref": "#/components/schemas/PeopleCriteria"
+            "$ref": "#/components/schemas/PeopleCriteriaResource"
           },
           "status": {
             "$ref": "#/components/schemas/OrgUnitStatus"
@@ -5765,7 +5781,7 @@
           }
         }
       },
-      "PeopleCriteria": {
+      "PeopleCriteriaResource": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -5773,25 +5789,61 @@
             "type": "array",
             "nullable": true,
             "items": {
-              "$ref": "#/components/schemas/BasePeopleCriteria"
+              "$ref": "#/components/schemas/PeopleCriterionResource"
             }
           },
           "excludes": {
             "type": "array",
             "nullable": true,
             "items": {
-              "$ref": "#/components/schemas/BasePeopleCriteria"
+              "$ref": "#/components/schemas/PeopleCriterionResource"
             }
           }
         }
       },
-      "BasePeopleCriteria": {
+      "PeopleCriterionResource": {
         "type": "object",
-        "x-abstract": true,
         "additionalProperties": false,
         "properties": {
           "type": {
             "type": "string",
+            "nullable": true
+          },
+          "employee_ids": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "format": "guid"
+            }
+          },
+          "org_unit_id": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "job_position_id": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "site_id": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "permission_group_id": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "permission_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "erb_field_id": {
+            "type": "string",
+            "format": "guid",
             "nullable": true
           }
         }
@@ -5868,7 +5920,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/PeopleCriteria"
+                "$ref": "#/components/schemas/PeopleCriteriaResource"
               }
             ]
           },
@@ -5876,7 +5928,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/PeopleCriteria"
+                "$ref": "#/components/schemas/PeopleCriteriaResource"
               }
             ]
           },
@@ -5961,7 +6013,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/PeopleCriteria"
+                "$ref": "#/components/schemas/PeopleCriteriaResource"
               }
             ]
           },
@@ -5969,7 +6021,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/PeopleCriteria"
+                "$ref": "#/components/schemas/PeopleCriteriaResource"
               }
             ]
           },

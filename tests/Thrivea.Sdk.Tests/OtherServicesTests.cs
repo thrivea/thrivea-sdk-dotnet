@@ -79,22 +79,27 @@ public class OtherServicesTests
     }
 
     [Fact]
-    public async Task Org_unit_criteria_keep_every_field_the_api_sends()
+    public async Task Org_unit_criteria_read_and_write_in_the_v1_shape()
     {
         var (client, handler) = TestClient.Create();
-        handler.Enqueue(HttpStatusCode.OK, """{"id":"orgu_00000000000000000000000001","object":"org_unit","name":"Engineering","org_unit_type_ids":["orgut_00000000000000000000000001"],"parent_org_unit_ids":[],"sibling_org_unit_ids":[],"managers_criteria":{"includes":[{"type":"ByEmployeeIds","employeeIds":["emp_00000000000000000000000001"]}],"excludes":[]},"employees_criteria":{"includes":[{"type":"Everyone"}],"excludes":[{"type":"None"}]},"status":1,"created_at":"2026-01-01T00:00:00Z","created_by":"emp_00000000000000000000000001","updated_at":"2026-01-01T00:00:00Z","updated_by":"emp_00000000000000000000000001","external_code":""}""");
+        handler.Enqueue(HttpStatusCode.OK, """{"id":"orgu_00000000000000000000000001","object":"org_unit","name":"Engineering","org_unit_type_ids":["orgut_00000000000000000000000001"],"parent_org_unit_ids":[],"sibling_org_unit_ids":[],"manager_ids":["emp_00000000000000000000000001"],"employee_ids":["emp_00000000000000000000000002","emp_00000000000000000000000003"],"managers_criteria":{"includes":[{"type":"by_employee_ids","employee_ids":["emp_00000000000000000000000001"]}],"excludes":[]},"employees_criteria":{"includes":[{"type":"everyone"}],"excludes":[{"type":"none"}]},"status":1,"created_at":"2026-01-01T00:00:00Z","created_by":"emp_00000000000000000000000001","updated_at":"2026-01-01T00:00:00Z","updated_by":"emp_00000000000000000000000001","external_code":""}""");
 
         var unit = await client.OrgUnits.GetAsync("orgu_00000000000000000000000001");
 
         Assert.Equal(OrgUnitStatus.Active, unit.Status);
+        Assert.Equal(["emp_00000000000000000000000001"], unit.ManagerIds);
+        Assert.Equal(["emp_00000000000000000000000002", "emp_00000000000000000000000003"], unit.EmployeeIds);
         var managers = Assert.Single(unit.ManagersCriteria!.Includes);
         Assert.Equal(PeopleCriterionTypes.ByEmployeeIds, managers.Type);
-        Assert.Equal("emp_00000000000000000000000001", managers.Properties!["employeeIds"][0].GetString());
+        Assert.Equal("emp_00000000000000000000000001", Assert.Single(managers.EmployeeIds!));
+        Assert.Null(managers.OrgUnitId);
         Assert.Equal(PeopleCriterionTypes.Everyone, Assert.Single(unit.EmployeesCriteria!.Includes).Type);
 
-        // And they go back out as they came in.
+        // And they go back out as they came in, without the fields the rule does not take.
         var json = JsonSerializer.Serialize(unit.ManagersCriteria, Internal.ThriveaJson.Options);
-        Assert.Contains("\"employeeIds\":[\"emp_00000000000000000000000001\"]", json, StringComparison.Ordinal);
+        Assert.Contains("\"employee_ids\":[\"emp_00000000000000000000000001\"]", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("org_unit_id", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("null", json, StringComparison.Ordinal);
     }
 
     [Fact]
