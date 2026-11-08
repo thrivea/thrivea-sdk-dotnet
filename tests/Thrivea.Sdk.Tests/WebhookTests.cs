@@ -1,3 +1,4 @@
+using Thrivea.Ids;
 using Thrivea.Webhooks;
 
 namespace Thrivea.Sdk.Tests;
@@ -39,6 +40,18 @@ public class WebhookTests
         Assert.Throws<ThriveaWebhookSignatureException>(() => WebhookSignature.Verify(Payload, null, "1700000000", Secret, now: now));
         Assert.Throws<ThriveaWebhookSignatureException>(() => WebhookSignature.Verify(Payload, signature, "yesterday", Secret, now: now));
         WebhookSignature.Verify(Payload, signature, "1700000000", Secret, tolerance: TimeSpan.Zero, now: now.AddDays(3));
+    }
+
+    [Fact]
+    public void An_employee_created_event_reads_into_EmployeeCreatedData()
+    {
+        var body = """{"id":"0199a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b","created":"2026-11-08T10:15:30.1234567+00:00","type":"employee.created","data":{"EmployeeId":"0199a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5c","EmailAddress":"ana.anic@example.com"}}""";
+
+        var data = WebhookEvent.Parse(body).GetData<EmployeeCreatedData>();
+
+        Assert.Equal(Guid.Parse("0199a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5c"), data!.EmployeeId);
+        Assert.Equal("ana.anic@example.com", data.EmailAddress);
+        Assert.Equal("emp", TypeId.FromUuid(ResourcePrefixes.Employee, data.EmployeeId).Prefix);
     }
 
     [Fact]

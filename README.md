@@ -221,6 +221,10 @@ if (webhookEvent.Type == WebhookEventTypes.EmployeeCreated)
 Answer `2xx` within 10 seconds and do the work afterwards; deliveries are at least once, so ignore an `Id` you have
 already processed.
 
+Every event type, a sample body for each, delivery and retries, and verification in other languages:
+[Webhook events](https://github.com/thrivea/thrivea-sdk-dotnet/wiki/Webhook-events) on the wiki. The wiki also has
+every resource and field, the conventions, and two end-to-end guides.
+
 ## Dependency injection (ASP.NET Core)
 
 ```csharp
