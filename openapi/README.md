@@ -7,8 +7,8 @@ not referenced, so a build of this repository needs nothing outside it.
 | | |
 |---|---|
 | Upstream | `thrivea/thrivea-backend`, `docs/app/specs/public-api/openapi/thrivea-v1.openapi.json` |
-| Backend commit | `4f50a177fb52` |
-| Exported | `2026-11-07` |
+| Backend commit | `67619f42dc` |
+| Exported | `2026-11-08` |
 | sha256 | `7271dc799d91d32f4ecc4c2d1a92b088e82abb8ce008e5c9d0da9ee8ff60bdf7` |
 
 `OpenApiConformanceTests` checks the SDK against it: every route a service calls exists, every field a model reads

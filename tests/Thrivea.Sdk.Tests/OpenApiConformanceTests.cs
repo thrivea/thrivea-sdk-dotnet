@@ -41,7 +41,8 @@ public class OpenApiConformanceTests
         [typeof(CandidateApplication), "CandidateApplication"], [typeof(CandidateApplicationCreateOptions), "CandidateApplicationBody"],
         [typeof(Candidate), "Candidate"],
         [typeof(Employee), "Employee"],
-        [typeof(OrgUnit), "OrgUnit"], [typeof(OrgUnitCreateOptions), "CreateOrgUnitRequest"], [typeof(OrgUnitUpdateOptions), "UpdateOrgUnitRequest"], [typeof(PeopleCriteria), "PeopleCriteria"],
+        [typeof(OrgUnit), "OrgUnit"], [typeof(OrgUnitCreateOptions), "CreateOrgUnitRequest"], [typeof(OrgUnitUpdateOptions), "UpdateOrgUnitRequest"],
+        [typeof(PeopleCriteria), "PeopleCriteriaResource"], [typeof(PeopleCriterion), "PeopleCriterionResource"],
         [typeof(OrgUnitType), "OrgUnitType"], [typeof(OrgUnitTypeCreateOptions), "CreateOrgUnitTypeRequest"], [typeof(OrgUnitTypeUpdateOptions), "UpdateOrgUnitTypeRequest"],
         [typeof(CostCenter), "CostCenter"], [typeof(CostCenterCreateOptions), "CreateCostCenterRequest"], [typeof(CostCenterUpdateOptions), "UpdateCostCenterRequest"],
         [typeof(WebhookEndpoint), "WebhookEndpoint"], [typeof(WebhookEndpointCreateOptions), "CreateWebhookEndpointRequest"], [typeof(WebhookEndpointUpdateOptions), "UpdateWebhookEndpointRequest"],
@@ -191,7 +192,9 @@ public class OpenApiConformanceTests
     private static IReadOnlyList<string> WireNames(Type type)
     {
         return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(property => property.GetCustomAttribute<JsonIgnoreAttribute>() is null && property.GetCustomAttribute<JsonExtensionDataAttribute>() is null)
+            // A property ignored only when null is still on the wire; only an unconditional JsonIgnore hides one.
+            .Where(property => property.GetCustomAttribute<JsonIgnoreAttribute>() is not { Condition: JsonIgnoreCondition.Always }
+                && property.GetCustomAttribute<JsonExtensionDataAttribute>() is null)
             .Select(property => property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? property.Name)
             .ToList();
     }
