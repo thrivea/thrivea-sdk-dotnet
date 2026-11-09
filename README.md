@@ -195,7 +195,7 @@ Create an endpoint and keep the secret the response gives you once:
 var endpoint = await client.WebhookEndpoints.CreateAsync(new WebhookEndpointCreateOptions
 {
     Url = "https://www.example.com/thrivea/webhook",
-    EventTypes = { WebhookEventTypes.EmployeeCreated, WebhookEventTypes.EmployeeUpdated }
+    EventTypes = { WebhookEventTypes.EmployeeCreated, WebhookEventTypes.JobOpeningClosed, WebhookEventTypes.JobOpeningUnpublished }
 });
 Store(endpoint.Secret); // shown this once
 ```
@@ -215,6 +215,11 @@ var webhookEvent = WebhookEvent.ParseAndVerify(
 if (webhookEvent.Type == WebhookEventTypes.EmployeeCreated)
 {
     var data = webhookEvent.GetData<EmployeeCreatedData>();
+}
+else if (webhookEvent.Type is WebhookEventTypes.JobOpeningClosed or WebhookEventTypes.JobOpeningUnpublished)
+{
+    var job = webhookEvent.GetData<JobOpening>(); // the job opening as the API returns it
+    TakeDownAd(job.Id, job.ExternalRef);
 }
 ```
 

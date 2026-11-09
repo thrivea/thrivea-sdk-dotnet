@@ -55,6 +55,22 @@ public class WebhookTests
     }
 
     [Fact]
+    public void A_job_opening_event_reads_into_the_JobOpening_the_API_returns()
+    {
+        var body = """{"id":"0199a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b","created":"2026-11-09T10:15:30.1234567+00:00","type":"job_opening.closed","data":{"object":"job_opening","id":"job_01h2xcejqtf2nbrexx3vqjhp41","title":"Senior .NET Engineer","status":"closed","workplace_type":"hybrid","published":true,"external_ref":"vega-1001","created_at":"2026-11-01T08:00:00+00:00"}}""";
+
+        var webhookEvent = WebhookEvent.Parse(body);
+        var job = webhookEvent.GetData<JobOpening>();
+
+        Assert.Equal(WebhookEventTypes.JobOpeningClosed, webhookEvent.Type);
+        Assert.Equal("job_01h2xcejqtf2nbrexx3vqjhp41", job!.Id);
+        Assert.Equal(JobOpeningStatus.Closed, job.Status);
+        Assert.Equal(Thrivea.WorkplaceType.Hybrid, job.WorkplaceType);
+        Assert.True(job.Published);
+        Assert.Equal("vega-1001", job.ExternalRef);
+    }
+
+    [Fact]
     public void The_event_parses_and_its_data_deserializes_case_insensitively()
     {
         var signature = WebhookSignature.Compute(Payload, "1700000000", Secret);

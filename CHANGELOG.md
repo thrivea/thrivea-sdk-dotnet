@@ -4,6 +4,10 @@ All notable changes to `Thrivea.Sdk` are recorded here. The format follows [Keep
 
 ## [Unreleased]
 
+### Added
+
+- `WebhookEventTypes.JobOpeningCreated`, `JobOpeningUpdated`, `JobOpeningPublished`, `JobOpeningUnpublished`, `JobOpeningClosed`, `JobOpeningReopened` and `JobOpeningArchived`. Their data is the `JobOpening` as the API returns it, so `GetData<JobOpening>()` reads it.
+
 ## [0.1.0] - 2026-11-07
 
 ### Added
