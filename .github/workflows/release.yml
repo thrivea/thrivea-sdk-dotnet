@@ -1,20 +1,25 @@
-# Releases Thrivea.Sdk: cuts the CHANGELOG, tags, publishes to nuget.org and creates the GitHub release, in one run.
+# Releases Thrivea.Sdk in two runs of this workflow: prepare on main, publish on the tag.
 #
-# Start it from Actions → Release → Run workflow with the version, from the backend with
+# Start it from Actions → Release → Run workflow on main with the version, from the backend with
 # `make release-sdk VERSION=x.y.z`, or with `gh workflow run release.yml -R thrivea/thrivea-sdk-dotnet -f version=x.y.z`.
-# The run moves [Unreleased] to [x.y.z] - <today>, builds and tests that tree, commits it to main and tags it vx.y.z,
-# so the package always carries the CHANGELOG of its own release. Then it pushes to nuget.org and creates the GitHub
-# release with that CHANGELOG section as its notes.
 #
-# Re-running a run that failed after the tag went out resumes from the tag: the package push skips a duplicate and the
-# GitHub release is created only when missing. A tag v* pushed by hand still releases, as long as CHANGELOG.md at that
-# tag already has the version's section.
+# 1. prepare (on main): moves [Unreleased] to [x.y.z] - <today>, builds and tests that tree, commits it to main and
+#    tags it vx.y.z, then starts this workflow again on the tag. A red prepare changes nothing.
+# 2. publish (on the tag): builds, tests and packs exactly what the tag holds, pushes to nuget.org and creates the
+#    GitHub release with the CHANGELOG section as its notes. It runs in the environment "nuget", which deploys from
+#    tags v* only and waits for a reviewer's approval.
+#
+# Only a tag publishes, however it was made: a tag v* pushed by hand runs publish too, as long as CHANGELOG.md at the
+# tag has the version's section. The tag pushed by prepare uses GITHUB_TOKEN, which starts no push run, so prepare
+# starts publish itself with a workflow_dispatch on the tag. Re-running a failed publish is safe: the package push
+# skips a duplicate and the GitHub release is created only when missing.
 #
 # nuget.org Trusted Publishing is bound to this file name and the environment "nuget": keep both. One-time setup on
 # nuget.org, under the organization that owns the Thrivea.* prefix: Manage package → Trusted publishers → GitHub
 # Actions, repository thrivea/thrivea-sdk-dotnet, workflow release.yml, environment "nuget"; the repository variable
 # NUGET_USER holds the nuget.org user name.
 name: Release
+run-name: ${{ github.ref_type == 'tag' && format('Publish {0}', github.ref_name) || format('Prepare v{0}', inputs.version) }}
 
 on:
   workflow_dispatch:
@@ -27,17 +32,19 @@ on:
     tags: ['v*']
 
 permissions:
-  contents: write
-  id-token: write
+  contents: read
 
 concurrency:
-  group: release
+  group: release-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  publish:
+  prepare:
+    if: github.ref_type == 'branch'
     runs-on: ubuntu-latest
-    environment: nuget
+    permissions:
+      contents: write
+      actions: write
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
@@ -45,35 +52,27 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Version and starting point
+      - name: Version
         id: version
         env:
           INPUT_VERSION: ${{ inputs.version }}
         run: |
           set -euo pipefail
-          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
-            version="$INPUT_VERSION"
-            if [ "$GITHUB_REF" != "refs/heads/main" ]; then
-              echo "::error::Release from main only; this run started from $GITHUB_REF."
-              exit 1
-            fi
-          else
-            version="${GITHUB_REF_NAME#v}"
+          version="${INPUT_VERSION#v}"
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::Release from main only; this run started from $GITHUB_REF."
+            exit 1
           fi
           if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
             echo "::error::'$version' is not a version: x.y.z or x.y.z-pre.n, without a leading v."
             exit 1
           fi
-          tag="v$version"
-
-          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
-            mode=tag
-          elif git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
-            # A re-run after the tag went out: publish what the tag holds, change nothing on main.
-            mode=resume
-            git checkout -q "$tag"
+          if git rev-parse -q --verify "refs/tags/v$version" >/dev/null; then
+            # The tag went out on an earlier run: only start publish again.
+            echo "v$version exists already; starting its publish."
+            exists=true
           else
-            mode=cut
+            exists=false
             # Compare x.y.z only, so 0.4.0 may follow 0.4.0-beta.1.
             core="${version%%-*}"
             latest=$(git tag --list 'v*' | sed -e 's/^v//' -e 's/-.*//' | sort -V | tail -1)
@@ -82,22 +81,75 @@ jobs:
               exit 1
             fi
           fi
-          if [ "$mode" != cut ] && ! bash .github/scripts/changelog.sh has "$version"; then
-            echo "::error::CHANGELOG.md at $tag has no section [$version]. Release with Actions → Release → Run workflow, which writes it."
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "exists=$exists" >> "$GITHUB_OUTPUT"
+
+      - name: Cut the CHANGELOG
+        if: steps.version.outputs.exists == 'false'
+        run: bash .github/scripts/changelog.sh cut "${{ steps.version.outputs.version }}" "$(date -u +%Y-%m-%d)"
+
+      - uses: actions/setup-dotnet@v6
+        if: steps.version.outputs.exists == 'false'
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build and test
+        if: steps.version.outputs.exists == 'false'
+        run: |
+          dotnet restore Thrivea.Sdk.slnx
+          dotnet build Thrivea.Sdk.slnx --no-restore --configuration Release -p:Version=${{ steps.version.outputs.version }}
+          dotnet test Thrivea.Sdk.slnx --no-build --configuration Release
+
+      # Only after build and test pass, so a red run leaves main and the tags as they were. If main moved meanwhile,
+      # the atomic push is refused and nothing changes: run it again.
+      - name: Commit the CHANGELOG and tag
+        if: steps.version.outputs.exists == 'false'
+        run: |
+          set -euo pipefail
+          version="${{ steps.version.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git commit -q -m "release: $version"
+          git tag -a "v$version" -m "Thrivea.Sdk $version"
+          git push --atomic origin "HEAD:refs/heads/main" "refs/tags/v$version"
+
+      - name: Start publish on the tag
+        run: |
+          set -euo pipefail
+          version="${{ steps.version.outputs.version }}"
+          gh workflow run release.yml --ref "v$version" -f version="$version"
+          echo "Publish v$version started; it waits for approval in the environment nuget:"
+          echo "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/workflows/release.yml"
+
+  publish:
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    environment: nuget
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Version from the tag
+        id: version
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "::error::The tag '$GITHUB_REF_NAME' is not v<version>."
+            exit 1
+          fi
+          if ! bash .github/scripts/changelog.sh has "$version"; then
+            echo "::error::CHANGELOG.md at $GITHUB_REF_NAME has no section [$version]. Release with Actions → Release → Run workflow on main, which writes it."
             exit 1
           fi
           case "$version" in *-*) prerelease=true ;; *) prerelease=false ;; esac
-          {
-            echo "version=$version"
-            echo "tag=$tag"
-            echo "mode=$mode"
-            echo "prerelease=$prerelease"
-          } >> "$GITHUB_OUTPUT"
-          echo "Releasing $version ($mode)."
-
-      - name: Cut the CHANGELOG
-        if: steps.version.outputs.mode == 'cut'
-        run: bash .github/scripts/changelog.sh cut "${{ steps.version.outputs.version }}" "$(date -u +%Y-%m-%d)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
 
       - uses: actions/setup-dotnet@v6
         with:
@@ -112,20 +164,6 @@ jobs:
       - name: Pack
         run: dotnet pack src/Thrivea.Sdk/Thrivea.Sdk.csproj --no-build --configuration Release -p:Version=${{ steps.version.outputs.version }} --output artifacts
 
-      # Only after build and test pass, so a red run leaves main and the tags as they were. If main moved meanwhile,
-      # the push is refused and nothing is published: run it again.
-      - name: Commit the CHANGELOG and tag
-        if: steps.version.outputs.mode == 'cut'
-        run: |
-          set -euo pipefail
-          version="${{ steps.version.outputs.version }}"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add CHANGELOG.md
-          git commit -q -m "release: $version"
-          git tag -a "v$version" -m "Thrivea.Sdk $version"
-          git push --atomic origin "HEAD:refs/heads/main" "refs/tags/v$version"
-
       - name: nuget.org login (trusted publishing)
         id: login
         uses: NuGet/login@v1
@@ -138,7 +176,7 @@ jobs:
       - name: GitHub release
         run: |
           set -euo pipefail
-          tag="${{ steps.version.outputs.tag }}"
+          tag="$GITHUB_REF_NAME"
           version="${{ steps.version.outputs.version }}"
           if gh release view "$tag" >/dev/null 2>&1; then
             echo "The GitHub release $tag already exists."

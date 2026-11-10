@@ -296,10 +296,12 @@ make release-sdk                   # shows what is unreleased and suggests the v
 make release-sdk VERSION=0.4.0
 ```
 
-One run moves `[Unreleased]` to `[0.4.0] - <today>`, builds and tests, commits that to `main` with the tag `v0.4.0`,
-publishes to nuget.org and creates the GitHub release from the CHANGELOG section. A run that fails before the tag
-changes nothing; re-running one that failed after the tag finishes the publish. Versions follow semver; before 1.0 a
-new field or method is a minor release, a fix a patch.
+The run on `main` moves `[Unreleased]` to `[0.4.0] - <today>`, builds and tests, and commits that to `main` with the
+tag `v0.4.0`. It then starts a second run on the tag, which builds what the tag holds, publishes to nuget.org and
+creates the GitHub release from the CHANGELOG section. Only a tag publishes: the environment `nuget` deploys from tags
+`v*` and waits for a reviewer's approval (**Review deployments** on that run). A run that fails before the tag changes
+nothing; a failed publish can be re-run. Versions follow semver; before 1.0 a new field or method is a minor release,
+a fix a patch.
 
 ## License
 
