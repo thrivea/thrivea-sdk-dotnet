@@ -4,9 +4,27 @@ All notable changes to `Thrivea.Sdk` are recorded here. The format follows [Keep
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-10
+
 ### Added
 
 - `WebhookEventTypes.JobOpeningCreated`, `JobOpeningUpdated`, `JobOpeningPublished`, `JobOpeningUnpublished`, `JobOpeningClosed`, `JobOpeningReopened` and `JobOpeningArchived`. Their data is the `JobOpening` as the API returns it, so `GetData<JobOpening>()` reads it.
+
+## [0.2.0] - 2026-11-08
+
+### Added
+
+- `OrgUnit.ManagerIds` and `OrgUnit.EmployeeIds`: who manages and who belongs to the unit, read-only, from each person's work history.
+- `EmployeeCreatedData`, the data of an `employee.created` event.
+- The SDK is tested against the API's OpenAPI document, vendored in the repository, with a nightly check that the copies agree.
+
+### Changed
+
+- `PeopleCriterion` has typed fields and the API's snake_case rule types.
+
+### Deprecated
+
+- The membership fields of the org unit create and update options. The API refuses them with `400`; membership comes from work history.
 
 ## [0.1.0] - 2026-11-07
 
