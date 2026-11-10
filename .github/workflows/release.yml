@@ -1,42 +1,155 @@
-# Publishes Thrivea.Sdk to nuget.org when a tag v<version> is pushed, through nuget.org Trusted Publishing
-# (no long-lived API key in secrets). One-time setup on nuget.org, under the organization that owns the Thrivea.*
-# prefix: Manage package → Trusted publishers → GitHub Actions, repository thrivea/thrivea-sdk-dotnet, workflow
-# release.yml, environment "nuget". Then set the repository variable NUGET_USER to the nuget.org user name.
+# Releases Thrivea.Sdk: cuts the CHANGELOG, tags, publishes to nuget.org and creates the GitHub release, in one run.
+#
+# Start it from Actions → Release → Run workflow with the version, from the backend with
+# `make release-sdk VERSION=x.y.z`, or with `gh workflow run release.yml -R thrivea/thrivea-sdk-dotnet -f version=x.y.z`.
+# The run moves [Unreleased] to [x.y.z] - <today>, builds and tests that tree, commits it to main and tags it vx.y.z,
+# so the package always carries the CHANGELOG of its own release. Then it pushes to nuget.org and creates the GitHub
+# release with that CHANGELOG section as its notes.
+#
+# Re-running a run that failed after the tag went out resumes from the tag: the package push skips a duplicate and the
+# GitHub release is created only when missing. A tag v* pushed by hand still releases, as long as CHANGELOG.md at that
+# tag already has the version's section.
+#
+# nuget.org Trusted Publishing is bound to this file name and the environment "nuget": keep both. One-time setup on
+# nuget.org, under the organization that owns the Thrivea.* prefix: Manage package → Trusted publishers → GitHub
+# Actions, repository thrivea/thrivea-sdk-dotnet, workflow release.yml, environment "nuget"; the repository variable
+# NUGET_USER holds the nuget.org user name.
 name: Release
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The version to release: x.y.z, or x.y.z-pre.n for a prerelease (no leading v)'
+        required: true
+        type: string
   push:
     tags: ['v*']
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     environment: nuget
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+
+      - name: Version and starting point
+        id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            version="$INPUT_VERSION"
+            if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+              echo "::error::Release from main only; this run started from $GITHUB_REF."
+              exit 1
+            fi
+          else
+            version="${GITHUB_REF_NAME#v}"
+          fi
+          if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "::error::'$version' is not a version: x.y.z or x.y.z-pre.n, without a leading v."
+            exit 1
+          fi
+          tag="v$version"
+
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            mode=tag
+          elif git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+            # A re-run after the tag went out: publish what the tag holds, change nothing on main.
+            mode=resume
+            git checkout -q "$tag"
+          else
+            mode=cut
+            # Compare x.y.z only, so 0.4.0 may follow 0.4.0-beta.1.
+            core="${version%%-*}"
+            latest=$(git tag --list 'v*' | sed -e 's/^v//' -e 's/-.*//' | sort -V | tail -1)
+            if [ -n "$latest" ] && [ "$(printf '%s\n%s\n' "$latest" "$core" | sort -V | tail -1)" != "$core" ]; then
+              echo "::error::$version is before the latest release, $latest."
+              exit 1
+            fi
+          fi
+          if [ "$mode" != cut ] && ! bash .github/scripts/changelog.sh has "$version"; then
+            echo "::error::CHANGELOG.md at $tag has no section [$version]. Release with Actions → Release → Run workflow, which writes it."
+            exit 1
+          fi
+          case "$version" in *-*) prerelease=true ;; *) prerelease=false ;; esac
+          {
+            echo "version=$version"
+            echo "tag=$tag"
+            echo "mode=$mode"
+            echo "prerelease=$prerelease"
+          } >> "$GITHUB_OUTPUT"
+          echo "Releasing $version ($mode)."
+
+      - name: Cut the CHANGELOG
+        if: steps.version.outputs.mode == 'cut'
+        run: bash .github/scripts/changelog.sh cut "${{ steps.version.outputs.version }}" "$(date -u +%Y-%m-%d)"
+
       - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
-      - name: Version from tag
-        id: version
-        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
       - name: Build and test
         run: |
           dotnet restore Thrivea.Sdk.slnx
           dotnet build Thrivea.Sdk.slnx --no-restore --configuration Release -p:Version=${{ steps.version.outputs.version }}
           dotnet test Thrivea.Sdk.slnx --no-build --configuration Release
+
       - name: Pack
         run: dotnet pack src/Thrivea.Sdk/Thrivea.Sdk.csproj --no-build --configuration Release -p:Version=${{ steps.version.outputs.version }} --output artifacts
+
+      # Only after build and test pass, so a red run leaves main and the tags as they were. If main moved meanwhile,
+      # the push is refused and nothing is published: run it again.
+      - name: Commit the CHANGELOG and tag
+        if: steps.version.outputs.mode == 'cut'
+        run: |
+          set -euo pipefail
+          version="${{ steps.version.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git commit -q -m "release: $version"
+          git tag -a "v$version" -m "Thrivea.Sdk $version"
+          git push --atomic origin "HEAD:refs/heads/main" "refs/tags/v$version"
+
       - name: nuget.org login (trusted publishing)
         id: login
         uses: NuGet/login@v1
         with:
           user: ${{ vars.NUGET_USER }}
+
       - name: Push
         run: dotnet nuget push "artifacts/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --skip-duplicate
+
+      - name: GitHub release
+        run: |
+          set -euo pipefail
+          tag="${{ steps.version.outputs.tag }}"
+          version="${{ steps.version.outputs.version }}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "The GitHub release $tag already exists."
+            exit 0
+          fi
+          bash .github/scripts/changelog.sh notes "$version" > notes.md
+          printf '\n```shell\ndotnet add package Thrivea.Sdk --version %s\n```\n\nhttps://www.nuget.org/packages/Thrivea.Sdk/%s\n' "$version" "$version" >> notes.md
+          if [ "${{ steps.version.outputs.prerelease }}" = "true" ]; then
+            gh release create "$tag" --verify-tag --prerelease --title "Thrivea.Sdk $version" --notes-file notes.md
+          else
+            gh release create "$tag" --verify-tag --title "Thrivea.Sdk $version" --notes-file notes.md
+          fi
+          echo "Released $version: https://www.nuget.org/packages/Thrivea.Sdk/$version"
+          echo "Next: the wiki's Changelog page (thrivea-sdk-dotnet.wiki), from 'Rolling out' to a dated section."
