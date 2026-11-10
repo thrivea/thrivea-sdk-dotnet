@@ -29,6 +29,18 @@ public sealed class CandidateApplication : IThriveaResource
     [JsonPropertyName("has_cv")]
     public bool HasCv { get; init; }
 
+    /// <summary>The number of the CV now current, from 1; <c>null</c> when no CV was stored.</summary>
+    [JsonPropertyName("cv_version")]
+    public int? CvVersion { get; init; }
+
+    /// <summary>
+    ///     <c>true</c> when this request changed an application that already existed: a new CV, a new cover note or phone,
+    ///     or an application reopened into the first stage. <c>false</c> for a new application (<c>201</c>) and for a
+    ///     request that brought nothing new, such as a retry.
+    /// </summary>
+    [JsonPropertyName("updated")]
+    public bool Updated { get; init; }
+
     /// <summary>When the application was made.</summary>
     [JsonPropertyName("created_at")]
     public DateTimeOffset CreatedAt { get; init; }
@@ -52,7 +64,12 @@ public sealed class CandidateApplicationCreateOptions
     [JsonPropertyName("last_name")]
     public string? LastName { get; set; }
 
-    /// <summary>Required. The candidate with this e-mail is reused; a second application to the same job returns the first.</summary>
+    /// <summary>
+    ///     Required. The candidate with this e-mail is reused. A second application to the same job updates the first and
+    ///     returns it with <c>200</c>: a new CV becomes the current version, a new cover note or phone replaces the old one,
+    ///     and a rejected or declined application goes back to the first stage. <see cref="CandidateApplication.Updated" />
+    ///     says whether anything changed.
+    /// </summary>
     [JsonPropertyName("email")]
     public string? Email { get; set; }
 

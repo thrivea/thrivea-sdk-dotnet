@@ -4412,6 +4412,48 @@
               }
             }
           },
+          "403": {
+            "description": "",
+            "headers": {
+              "Request-Id": {
+                "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Limit": {
+                "description": "How many requests this API key may make per window.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Remaining": {
+                "description": "How many of them are left in the current window.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Reset": {
+                "description": "Seconds until the window ends and the count starts over.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Policy": {
+                "description": "The limit and the window, as `600;w=60`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "401": {
             "description": "",
             "headers": {
@@ -4523,6 +4565,48 @@
             }
           },
           "400": {
+            "description": "",
+            "headers": {
+              "Request-Id": {
+                "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Limit": {
+                "description": "How many requests this API key may make per window.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Remaining": {
+                "description": "How many of them are left in the current window.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Reset": {
+                "description": "Seconds until the window ends and the count starts over.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Policy": {
+                "description": "The limit and the window, as `600;w=60`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
             "description": "",
             "headers": {
               "Request-Id": {
@@ -5319,6 +5403,14 @@
             "nullable": true
           },
           "has_cv": {
+            "type": "boolean"
+          },
+          "cv_version": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "updated": {
             "type": "boolean"
           },
           "created_at": {

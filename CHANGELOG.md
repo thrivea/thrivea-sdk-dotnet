@@ -4,6 +4,10 @@ All notable changes to `Thrivea.Sdk` are recorded here. The format follows [Keep
 
 ## [Unreleased]
 
+### Added
+
+- `CandidateApplication.Updated` and `CandidateApplication.CvVersion`. A second application from the same candidate to the same job updates the first one: a new CV becomes the current version, a new cover note or phone replaces the old one, and a rejected or declined application goes back to the first stage. `Updated` says whether the request changed anything, and `CvVersion` is the number of the current CV.
+
 ## [0.3.0] - 2026-11-10
 
 ### Added
