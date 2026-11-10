@@ -95,6 +95,18 @@ public class CandidateApplicationServiceTests
     }
 
     [Fact]
+    public async Task An_application_updated_with_a_new_cv_says_so_and_names_the_version_now_current()
+    {
+        var (client, handler) = TestClient.Create();
+        handler.Enqueue(HttpStatusCode.OK, """{"object":"candidate_application","id":"capp_01h455vb4pex5vsknk084sn02q","job_opening_id":"job_01h455vb4pex5vsknk084sn02q","candidate_id":"cand_01h455vb4pex5vsknk084sn02q","has_cv":true,"cv_version":2,"updated":true,"created_at":"2024-03-01T10:00:00Z"}""");
+
+        var application = await client.CandidateApplications.CreateAsync(new CandidateApplicationCreateOptions { JobOpeningId = "job_01h455vb4pex5vsknk084sn02q", FirstName = "A", LastName = "B", Email = "a@b.c" });
+
+        Assert.True(application.Updated);
+        Assert.Equal(2, application.CvVersion);
+    }
+
+    [Fact]
     public async Task The_job_opening_id_prefix_is_checked_before_sending()
     {
         var (client, handler) = TestClient.Create();
