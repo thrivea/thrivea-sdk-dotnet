@@ -10,7 +10,8 @@
 
   <PropertyGroup Label="Package">
     <PackageId>Thrivea.Sdk</PackageId>
-    <Version>0.1.0</Version>
+    <!-- A release sets the version from its tag (release.yml); a local build is visibly not a release. -->
+    <Version>0.0.0-dev</Version>
     <Authors>Thrivea d.o.o.</Authors>
     <Company>Thrivea d.o.o.</Company>
     <Product>Thrivea</Product>

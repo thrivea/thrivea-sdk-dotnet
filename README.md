@@ -286,6 +286,21 @@ dotnet test Thrivea.Sdk.slnx
 dotnet run --project samples/Thrivea.Sdk.Samples.Careers -- list   # needs THRIVEA_API_KEY
 ```
 
+## Releasing
+
+Entries go under `## [Unreleased]` in `CHANGELOG.md` in the PR that makes the change. To release, run **Actions →
+Release → Run workflow** on `main` with the version, or from a thrivea-backend checkout:
+
+```shell
+make release-sdk                   # shows what is unreleased and suggests the version
+make release-sdk VERSION=0.4.0
+```
+
+One run moves `[Unreleased]` to `[0.4.0] - <today>`, builds and tests, commits that to `main` with the tag `v0.4.0`,
+publishes to nuget.org and creates the GitHub release from the CHANGELOG section. A run that fails before the tag
+changes nothing; re-running one that failed after the tag finishes the publish. Versions follow semver; before 1.0 a
+new field or method is a minor release, a fix a patch.
+
 ## License
 
 [MIT](LICENSE). Copyright (c) 2026 Thrivea d.o.o.
