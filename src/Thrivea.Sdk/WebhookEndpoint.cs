@@ -75,6 +75,27 @@ public static class WebhookEventTypes
     /// <summary>An org-unit type was deleted.</summary>
     public const string OrgUnitTypeDeleted = "org_unit_type.deleted";
 
+    /// <summary>A job opening was created. The data is the <see cref="JobOpening" />; read it with <c>GetData&lt;JobOpening&gt;()</c>.</summary>
+    public const string JobOpeningCreated = "job_opening.created";
+
+    /// <summary>A job opening's title, description, workplace type, sites or positions changed. The data is the <see cref="JobOpening" />.</summary>
+    public const string JobOpeningUpdated = "job_opening.updated";
+
+    /// <summary>A job opening went on the careers page. The data is the <see cref="JobOpening" />.</summary>
+    public const string JobOpeningPublished = "job_opening.published";
+
+    /// <summary>A job opening came off the careers page. The data is the <see cref="JobOpening" />.</summary>
+    public const string JobOpeningUnpublished = "job_opening.unpublished";
+
+    /// <summary>A job opening was closed and takes no more applications. The data is the <see cref="JobOpening" />.</summary>
+    public const string JobOpeningClosed = "job_opening.closed";
+
+    /// <summary>A closed job opening was opened again. The data is the <see cref="JobOpening" />.</summary>
+    public const string JobOpeningReopened = "job_opening.reopened";
+
+    /// <summary>A job opening was archived. The data is the <see cref="JobOpening" />.</summary>
+    public const string JobOpeningArchived = "job_opening.archived";
+
     /// <summary>A person joined (identity provisioning).</summary>
     public const string UserJoiner = "user.joiner";
 

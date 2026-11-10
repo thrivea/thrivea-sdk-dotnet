@@ -22,7 +22,10 @@ public sealed class WebhookEvent
     [JsonPropertyName("type")]
     public string Type { get; init; } = string.Empty;
 
-    /// <summary>The event's data, with the property names Thrivea records (PascalCase). Read it with <see cref="GetData{T}" />.</summary>
+    /// <summary>
+    ///     The event's data. Read it with <see cref="GetData{T}" />. A <c>job_opening.*</c> event carries the
+    ///     <see cref="JobOpening" /> as the API returns it; the older events carry the property names Thrivea records (PascalCase).
+    /// </summary>
     [JsonPropertyName("data")]
     public JsonElement Data { get; init; }
 
