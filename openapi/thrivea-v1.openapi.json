@@ -1,5 +1,5 @@
 {
-  "x-generator": "NSwag v14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))",
+  "x-generator": "NSwag v14.7.1.0 (NJsonSchema v11.6.2.0 (Newtonsoft.Json v13.0.0.0))",
   "openapi": "3.0.0",
   "info": {
     "title": "Thrivea Public API",
@@ -17,11 +17,14 @@
         "tags": [
           "CandidateApi"
         ],
+        "summary": "List candidates, oldest first.",
+        "description": "Scope: `read:candidates`.",
         "operationId": "CandidateApi_ListCandidates",
         "parameters": [
           {
             "name": "limit",
             "in": "query",
+            "description": "How many to return, between 1 and 100.",
             "schema": {
               "type": "integer",
               "format": "int32",
@@ -34,6 +37,7 @@
             "name": "starting_after",
             "x-originalName": "startingAfter",
             "in": "query",
+            "description": "A candidate id: return the ones after it.",
             "schema": {
               "type": "string",
               "nullable": true
@@ -43,6 +47,7 @@
           {
             "name": "email",
             "in": "query",
+            "description": "Only the candidate with this e-mail, exactly as stored.",
             "schema": {
               "type": "string",
               "nullable": true
@@ -53,6 +58,7 @@
             "name": "updated_after",
             "x-originalName": "updatedAfter",
             "in": "query",
+            "description": "Only candidates created or changed at or after this instant.",
             "schema": {
               "type": "string",
               "format": "date-time",
@@ -193,6 +199,9 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "read:candidates"
         ]
       }
     },
@@ -201,6 +210,8 @@
         "tags": [
           "CandidateApi"
         ],
+        "summary": "Retrieve a candidate.",
+        "description": "Scope: `read:candidates`.",
         "operationId": "CandidateApi_GetCandidate",
         "parameters": [
           {
@@ -345,6 +356,9 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "read:candidates"
         ]
       }
     },
@@ -353,6 +367,8 @@
         "tags": [
           "CandidateApplicationApi"
         ],
+        "summary": "Submit an application, as JSON (no CV).",
+        "description": "The same path also accepts multipart/form-data with these fields in snake_case (tags repeated or\ncomma-separated) and the CV in an optional file field named cv.\nThe candidate is found by email or created; an existing candidate keeps the name Thrivea holds. A first\napplication to the job answers 201. The same candidate applying to the same job again, the next day or a\nyear later, updates that one application and answers 200: a new CV becomes the current version and the\nearlier ones stay, a new cover note replaces the old, a new phone number goes onto the candidate, and an\napplication that was rejected or declined goes back to the first stage. One rejected permanently, or ended in a\nhire, keeps its stage, and its new CV and cover note are kept without telling anyone. Otherwise the hiring team\nis told of a new CV, a new cover note or a reopened application, never of a retry. The tags are added to the\ncandidate either way; external_ref stays the one sent first.\n\nScope: `write:candidate_applications`.",
         "operationId": "CandidateApplicationApi_SubmitJson",
         "parameters": [
           {
@@ -378,7 +394,7 @@
           "x-position": 1
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "",
             "headers": {
               "Request-Id": {
@@ -426,7 +442,7 @@
               }
             }
           },
-          "200": {
+          "201": {
             "description": "",
             "headers": {
               "Request-Id": {
@@ -605,6 +621,9 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "write:candidate_applications"
         ]
       }
     },
@@ -613,11 +632,14 @@
         "tags": [
           "CostCenterApi"
         ],
+        "summary": "List cost centers, oldest first.",
+        "description": "Scope: `read:cost_centers`.",
         "operationId": "CostCenterApi_ListCostCenters",
         "parameters": [
           {
             "name": "limit",
             "in": "query",
+            "description": "How many to return, between 1 and 100.",
             "schema": {
               "type": "integer",
               "format": "int32",
@@ -630,6 +652,7 @@
             "name": "starting_after",
             "x-originalName": "startingAfter",
             "in": "query",
+            "description": "A cost center id: return the ones after it.",
             "schema": {
               "type": "string",
               "nullable": true
@@ -640,6 +663,7 @@
             "name": "updated_after",
             "x-originalName": "updatedAfter",
             "in": "query",
+            "description": "Return only cost centers created or changed at or after this instant.",
             "schema": {
               "type": "string",
               "format": "date-time",
@@ -822,12 +846,17 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "read:cost_centers"
         ]
       },
       "post": {
         "tags": [
           "CostCenterApi"
         ],
+        "summary": "Create a cost center.",
+        "description": "Scope: `write:cost_centers`.",
         "operationId": "CostCenterApi_CreateCostCenter",
         "parameters": [
           {
@@ -990,6 +1019,9 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "write:cost_centers"
         ]
       }
     },
@@ -998,6 +1030,8 @@
         "tags": [
           "CostCenterApi"
         ],
+        "summary": "Retrieve a cost center.",
+        "description": "Scope: `read:cost_centers`.",
         "operationId": "CostCenterApi_GetCostCenter",
         "parameters": [
           {
@@ -1142,12 +1176,17 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "read:cost_centers"
         ]
       },
       "patch": {
         "tags": [
           "CostCenterApi"
         ],
+        "summary": "Update a cost center. A field left out keeps its value.",
+        "description": "Scope: `write:cost_centers`.",
         "operationId": "CostCenterApi_UpdateCostCenter",
         "parameters": [
           {
@@ -1361,6 +1400,9 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "write:cost_centers"
         ]
       }
     },
@@ -1369,11 +1411,14 @@
         "tags": [
           "EmployeeApi"
         ],
+        "summary": "List all employees",
+        "description": "Scope: `read:employees`.",
         "operationId": "EmployeeApi_ListEmployees",
         "parameters": [
           {
             "name": "limit",
             "in": "query",
+            "description": "A limit on the number of objects to be returned, between 1 and 100.",
             "schema": {
               "type": "integer",
               "format": "int32",
@@ -1386,6 +1431,7 @@
             "name": "starting_after",
             "x-originalName": "startingAfter",
             "in": "query",
+            "description": "A cursor for use in pagination. starting_after is an object ID that defines your place in\nthe list.\n            ",
             "schema": {
               "type": "string",
               "nullable": true
@@ -1396,6 +1442,7 @@
             "name": "ending_before",
             "x-originalName": "endingBefore",
             "in": "query",
+            "description": "A cursor for use in pagination. ending_before is an object ID that defines your place in the\nlist.\n            ",
             "schema": {
               "type": "string",
               "nullable": true
@@ -1405,7 +1452,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "List of employees",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -1535,6 +1582,9 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "read:employees"
         ]
       }
     },
@@ -1543,12 +1593,15 @@
         "tags": [
           "EmployeeApi"
         ],
+        "summary": "Retrieve a specific employee",
+        "description": "Scope: `read:employees`.",
         "operationId": "EmployeeApi_GetEmployee",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The ID of the employee to retrieve",
             "schema": {
               "type": "string"
             },
@@ -1557,7 +1610,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "The employee",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -1729,6 +1782,9 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "read:employees"
         ]
       }
     },
@@ -1737,11 +1793,14 @@
         "tags": [
           "JobOpeningApi"
         ],
+        "summary": "List job openings, oldest first. Open ones by default.",
+        "description": "Scope: `read:job_openings`.",
         "operationId": "JobOpeningApi_ListJobOpenings",
         "parameters": [
           {
             "name": "status",
             "in": "query",
+            "description": "open (the default), closed or archived.",
             "schema": {
               "type": "string",
               "default": "open",
@@ -1752,6 +1811,7 @@
           {
             "name": "limit",
             "in": "query",
+            "description": "How many to return, between 1 and 100.",
             "schema": {
               "type": "integer",
               "format": "int32",
@@ -1764,6 +1824,7 @@
             "name": "starting_after",
             "x-originalName": "startingAfter",
             "in": "query",
+            "description": "A job opening id: return the ones after it.",
             "schema": {
               "type": "string",
               "nullable": true
@@ -1903,12 +1964,17 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "read:job_openings"
         ]
       },
       "post": {
         "tags": [
           "JobOpeningApi"
         ],
+        "summary": "Create a job opening: open, not published, on the workspace's default pipeline, with no hiring team. The same\nexternal_ref again returns the job already created.",
+        "description": "Scope: `write:job_openings`.",
         "operationId": "JobOpeningApi_CreateJobOpening",
         "parameters": [
           {
@@ -2071,6 +2137,9 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "write:job_openings"
         ]
       }
     },
@@ -2079,6 +2148,8 @@
         "tags": [
           "JobOpeningApi"
         ],
+        "summary": "Retrieve a job opening.",
+        "description": "Scope: `read:job_openings`.",
         "operationId": "JobOpeningApi_GetJobOpening",
         "parameters": [
           {
@@ -2223,6 +2294,9 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "read:job_openings"
         ]
       }
     },
@@ -2231,11 +2305,14 @@
         "tags": [
           "OrgUnitApi"
         ],
+        "summary": "List all org units",
+        "description": "Scope: `read:org_units`.",
         "operationId": "OrgUnitApi_ListOrgUnits",
         "parameters": [
           {
             "name": "limit",
             "in": "query",
+            "description": "A limit on the number of objects to be returned, between 1 and 100.",
             "schema": {
               "type": "integer",
               "format": "int32",
@@ -2248,6 +2325,7 @@
             "name": "starting_after",
             "x-originalName": "startingAfter",
             "in": "query",
+            "description": "A cursor for use in pagination. starting_after is an object ID that defines your place in\nthe list.\n            ",
             "schema": {
               "type": "string",
               "nullable": true
@@ -2258,6 +2336,7 @@
             "name": "ending_before",
             "x-originalName": "endingBefore",
             "in": "query",
+            "description": "A cursor for use in pagination. ending_before is an object ID that defines your place in the\nlist.\n            ",
             "schema": {
               "type": "string",
               "nullable": true
@@ -2267,7 +2346,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "List of org units",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -2397,12 +2476,17 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "read:org_units"
         ]
       },
       "post": {
         "tags": [
           "OrgUnitApi"
         ],
+        "summary": "Create a new org unit",
+        "description": "Scope: `write:org_units`.",
         "operationId": "OrgUnitApi_CreateOrgUnit",
         "parameters": [
           {
@@ -2417,6 +2501,7 @@
         ],
         "requestBody": {
           "x-name": "request",
+          "description": "The org unit creation request",
           "content": {
             "application/json": {
               "schema": {
@@ -2429,7 +2514,7 @@
         },
         "responses": {
           "201": {
-            "description": "",
+            "description": "The created org unit",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -2565,6 +2650,9 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "write:org_units"
         ]
       }
     },
@@ -2573,12 +2661,15 @@
         "tags": [
           "OrgUnitApi"
         ],
+        "summary": "Retrieve a specific org unit",
+        "description": "Scope: `read:org_units`.",
         "operationId": "OrgUnitApi_GetOrgUnit",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The ID of the org unit to retrieve",
             "schema": {
               "type": "string"
             },
@@ -2587,7 +2678,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "The org unit",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -2759,18 +2850,24 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "read:org_units"
         ]
       },
       "patch": {
         "tags": [
           "OrgUnitApi"
         ],
+        "summary": "Update an existing org unit",
+        "description": "Scope: `write:org_units`.",
         "operationId": "OrgUnitApi_UpdateOrgUnit",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The ID of the org unit to update",
             "schema": {
               "type": "string"
             },
@@ -2788,6 +2885,7 @@
         ],
         "requestBody": {
           "x-name": "request",
+          "description": "The update request",
           "content": {
             "application/json": {
               "schema": {
@@ -2800,7 +2898,7 @@
         },
         "responses": {
           "200": {
-            "description": "",
+            "description": "The updated org unit",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -2978,18 +3076,24 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "write:org_units"
         ]
       },
       "delete": {
         "tags": [
           "OrgUnitApi"
         ],
+        "summary": "Delete an org unit",
+        "description": "Scope: `write:org_units`.",
         "operationId": "OrgUnitApi_DeleteOrgUnit",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The ID of the org unit to delete",
             "schema": {
               "type": "string"
             },
@@ -2998,7 +3102,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "A deleted response",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -3170,6 +3274,9 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "write:org_units"
         ]
       }
     },
@@ -3178,11 +3285,14 @@
         "tags": [
           "OrgUnitTypeApi"
         ],
+        "summary": "List all org unit types",
+        "description": "Scope: `read:org_unit_types`.",
         "operationId": "OrgUnitTypeApi_ListOrgUnitTypes",
         "parameters": [
           {
             "name": "limit",
             "in": "query",
+            "description": "A limit on the number of objects to be returned, between 1 and 100.",
             "schema": {
               "type": "integer",
               "format": "int32",
@@ -3195,6 +3305,7 @@
             "name": "starting_after",
             "x-originalName": "startingAfter",
             "in": "query",
+            "description": "A cursor for use in pagination. starting_after is an object ID that defines your place in\nthe list.\n            ",
             "schema": {
               "type": "string",
               "nullable": true
@@ -3205,6 +3316,7 @@
             "name": "ending_before",
             "x-originalName": "endingBefore",
             "in": "query",
+            "description": "A cursor for use in pagination. ending_before is an object ID that defines your place in the\nlist.\n            ",
             "schema": {
               "type": "string",
               "nullable": true
@@ -3214,7 +3326,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "List of org unit types",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -3344,12 +3456,17 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "read:org_unit_types"
         ]
       },
       "post": {
         "tags": [
           "OrgUnitTypeApi"
         ],
+        "summary": "Create a new org unit type",
+        "description": "Scope: `write:org_unit_types`.",
         "operationId": "OrgUnitTypeApi_CreateOrgUnitType",
         "parameters": [
           {
@@ -3364,6 +3481,7 @@
         ],
         "requestBody": {
           "x-name": "request",
+          "description": "The org unit type creation request",
           "content": {
             "application/json": {
               "schema": {
@@ -3376,7 +3494,7 @@
         },
         "responses": {
           "201": {
-            "description": "",
+            "description": "The created org unit type",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -3512,6 +3630,9 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "write:org_unit_types"
         ]
       }
     },
@@ -3520,12 +3641,15 @@
         "tags": [
           "OrgUnitTypeApi"
         ],
+        "summary": "Retrieve a specific org unit type",
+        "description": "Scope: `read:org_unit_types`.",
         "operationId": "OrgUnitTypeApi_GetOrgUnitType",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The ID of the org unit type to retrieve",
             "schema": {
               "type": "string"
             },
@@ -3534,7 +3658,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "The org unit type",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -3706,18 +3830,24 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "read:org_unit_types"
         ]
       },
       "patch": {
         "tags": [
           "OrgUnitTypeApi"
         ],
+        "summary": "Update an existing org unit type",
+        "description": "Scope: `write:org_unit_types`.",
         "operationId": "OrgUnitTypeApi_UpdateOrgUnitType",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The ID of the org unit type to update",
             "schema": {
               "type": "string"
             },
@@ -3735,6 +3865,7 @@
         ],
         "requestBody": {
           "x-name": "request",
+          "description": "The update request",
           "content": {
             "application/json": {
               "schema": {
@@ -3747,7 +3878,7 @@
         },
         "responses": {
           "200": {
-            "description": "",
+            "description": "The updated org unit type",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -3925,18 +4056,24 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "write:org_unit_types"
         ]
       },
       "delete": {
         "tags": [
           "OrgUnitTypeApi"
         ],
+        "summary": "Delete an org unit type",
+        "description": "Scope: `write:org_unit_types`.",
         "operationId": "OrgUnitTypeApi_DeleteOrgUnitType",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The ID of the org unit type to delete",
             "schema": {
               "type": "string"
             },
@@ -3945,7 +4082,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "A deleted response",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -4117,6 +4254,9 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "write:org_unit_types"
         ]
       }
     },
@@ -4125,11 +4265,14 @@
         "tags": [
           "WebhookEndpointApi"
         ],
+        "summary": "List all webhook endpoints",
+        "description": "Scope: `read:webhook_endpoints`.",
         "operationId": "WebhookEndpointApi_ListWebhookEndpoints",
         "parameters": [
           {
             "name": "limit",
             "in": "query",
+            "description": "A limit on the number of objects to be returned, between 1 and 100.",
             "schema": {
               "type": "integer",
               "format": "int32",
@@ -4142,6 +4285,7 @@
             "name": "starting_after",
             "x-originalName": "startingAfter",
             "in": "query",
+            "description": "A cursor for use in pagination. starting_after is an object ID that defines your place in\nthe list.\n            ",
             "schema": {
               "type": "string",
               "nullable": true
@@ -4152,6 +4296,7 @@
             "name": "ending_before",
             "x-originalName": "endingBefore",
             "in": "query",
+            "description": "A cursor for use in pagination. ending_before is an object ID that defines your place in the\nlist.\n            ",
             "schema": {
               "type": "string",
               "nullable": true
@@ -4161,7 +4306,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "List of webhook endpoints",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -4291,12 +4436,17 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "read:webhook_endpoints"
         ]
       },
       "post": {
         "tags": [
           "WebhookEndpointApi"
         ],
+        "summary": "Create a new webhook endpoint",
+        "description": "Scope: `write:webhook_endpoints`.",
         "operationId": "WebhookEndpointApi_CreateWebhookEndpoint",
         "parameters": [
           {
@@ -4311,6 +4461,7 @@
         ],
         "requestBody": {
           "x-name": "request",
+          "description": "The webhook endpoint creation request",
           "content": {
             "application/json": {
               "schema": {
@@ -4323,7 +4474,7 @@
         },
         "responses": {
           "201": {
-            "description": "",
+            "description": "The created webhook endpoint",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -4412,7 +4563,7 @@
               }
             }
           },
-          "403": {
+          "401": {
             "description": "",
             "headers": {
               "Request-Id": {
@@ -4454,7 +4605,7 @@
               }
             }
           },
-          "401": {
+          "403": {
             "description": "",
             "headers": {
               "Request-Id": {
@@ -4501,6 +4652,9 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "write:webhook_endpoints"
         ]
       }
     },
@@ -4509,12 +4663,15 @@
         "tags": [
           "WebhookEndpointApi"
         ],
+        "summary": "Retrieve a specific webhook endpoint",
+        "description": "Scope: `read:webhook_endpoints`.",
         "operationId": "WebhookEndpointApi_GetWebhookEndpoint",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The ID of the webhook endpoint to retrieve",
             "schema": {
               "type": "string"
             },
@@ -4523,7 +4680,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "The webhook endpoint",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -4606,7 +4763,7 @@
               }
             }
           },
-          "403": {
+          "401": {
             "description": "",
             "headers": {
               "Request-Id": {
@@ -4648,7 +4805,7 @@
               }
             }
           },
-          "401": {
+          "403": {
             "description": "",
             "headers": {
               "Request-Id": {
@@ -4737,18 +4894,24 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "read:webhook_endpoints"
         ]
       },
       "patch": {
         "tags": [
           "WebhookEndpointApi"
         ],
+        "summary": "Update an existing webhook endpoint",
+        "description": "Scope: `write:webhook_endpoints`.",
         "operationId": "WebhookEndpointApi_UpdateWebhookEndpoint",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The ID of the webhook endpoint to update",
             "schema": {
               "type": "string"
             },
@@ -4766,6 +4929,7 @@
         ],
         "requestBody": {
           "x-name": "request",
+          "description": "The update request",
           "content": {
             "application/json": {
               "schema": {
@@ -4778,7 +4942,7 @@
         },
         "responses": {
           "200": {
-            "description": "",
+            "description": "The updated webhook endpoint",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -4956,18 +5120,24 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "write:webhook_endpoints"
         ]
       },
       "delete": {
         "tags": [
           "WebhookEndpointApi"
         ],
+        "summary": "Delete a webhook endpoint",
+        "description": "Scope: `write:webhook_endpoints`.",
         "operationId": "WebhookEndpointApi_DeleteWebhookEndpoint",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The ID of the webhook endpoint to delete",
             "schema": {
               "type": "string"
             },
@@ -4976,7 +5146,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "A deleted response",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -5148,6 +5318,9 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "write:webhook_endpoints"
         ]
       }
     },
@@ -5156,10 +5329,12 @@
         "tags": [
           "WebhookEndpointApi"
         ],
+        "summary": "List all available webhook event types",
+        "description": "Scope: `read:webhook_endpoints`.",
         "operationId": "WebhookEndpointApi_GetWebhookEventTypes",
         "responses": {
           "200": {
-            "description": "",
+            "description": "List of webhook event types",
             "headers": {
               "Request-Id": {
                 "description": "The request's id, to quote to Thrivea support; the same value is in every error body as request_id.",
@@ -5247,6 +5422,9 @@
           {
             "Bearer": []
           }
+        ],
+        "x-thrivea-scopes": [
+          "read:webhook_endpoints"
         ]
       }
     }
@@ -5256,65 +5434,92 @@
       "CandidateListResponse": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "object"
+        ],
         "properties": {
           "object": {
             "type": "string",
-            "nullable": true
+            "description": "String representing the object's type. Value is \"list\".",
+            "nullable": false,
+            "example": "list",
+            "enum": [
+              "list"
+            ]
           },
           "url": {
             "type": "string",
+            "description": "URL of this list resource.",
             "nullable": true
           },
           "data": {
             "type": "array",
+            "description": "The candidates on this page.",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/Candidate"
             }
           },
           "has_more": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "True if there are more candidates after this page."
           }
         }
       },
       "Candidate": {
         "type": "object",
+        "description": "A candidate, as the system that sent the application needs them back: who they are and the tags they carry. No\napplications, comments, CV or pipeline position; those stay with the hiring team.\n            ",
         "additionalProperties": false,
         "required": [
-          "id"
+          "id",
+          "object",
+          "object",
+          "object"
         ],
         "properties": {
           "object": {
             "type": "string",
-            "nullable": true
+            "description": "String representing the object's type. Value is \"candidate\".",
+            "nullable": false,
+            "example": "candidate",
+            "enum": [
+              "candidate"
+            ]
           },
           "id": {
             "type": "string",
-            "format": "guid",
-            "minLength": 1
+            "description": "Unique identifier, e.g. cand_01h2x….",
+            "pattern": "^cand_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "example": "cand_01k6gv5gymfsfrn6rc3mq3yjjv"
           },
           "first_name": {
             "type": "string",
+            "description": "The candidate's first name, as given on their first application.",
             "nullable": true
           },
           "last_name": {
             "type": "string",
+            "description": "The candidate's last name, as given on their first application.",
             "nullable": true
           },
           "email": {
             "type": "string",
+            "description": "The e-mail the candidate is known by; one candidate per e-mail in a workspace.",
             "nullable": true
           },
           "phone": {
             "type": "string",
+            "description": "Phone number, when given.",
             "nullable": true
           },
           "headline": {
             "type": "string",
+            "description": "A one-line headline, when a recruiter wrote one.",
             "nullable": true
           },
           "tags": {
             "type": "array",
+            "description": "The candidate's tags by name, e.g. #frontend-engineer.",
             "nullable": true,
             "items": {
               "type": "string"
@@ -5322,10 +5527,12 @@
           },
           "created_at": {
             "type": "string",
+            "description": "Time at which the candidate was created.",
             "format": "date-time"
           },
           "updated_at": {
             "type": "string",
+            "description": "Time at which the candidate or their tags last changed; the creation time until then.",
             "format": "date-time"
           }
         }
@@ -5376,79 +5583,105 @@
       },
       "CandidateApplication": {
         "type": "object",
+        "description": "An application a candidate made to one job opening.",
         "additionalProperties": false,
         "required": [
-          "id"
+          "id",
+          "object",
+          "object"
         ],
         "properties": {
           "object": {
             "type": "string",
-            "nullable": true
+            "description": "String representing the object's type. Value is \"candidate_application\".",
+            "nullable": false,
+            "example": "candidate_application",
+            "enum": [
+              "candidate_application"
+            ]
           },
           "id": {
             "type": "string",
-            "format": "guid",
-            "minLength": 1
+            "description": "Unique identifier, e.g. capp_01h2x….",
+            "pattern": "^capp_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "example": "capp_01k6gv5gymfsfrn6rc3mq3yjjv"
           },
           "job_opening_id": {
             "type": "string",
-            "format": "guid"
+            "description": "The job opening applied to.",
+            "pattern": "^job_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "example": "job_01k6gv5gymfsfrn6rc3mq3yjjv"
           },
           "candidate_id": {
             "type": "string",
-            "format": "guid"
+            "description": "The candidate, reused when the e-mail is already known.",
+            "pattern": "^cand_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "example": "cand_01k6gv5gymfsfrn6rc3mq3yjjv"
           },
           "external_ref": {
             "type": "string",
+            "description": "Your id for the submission, as sent.",
             "nullable": true
           },
           "has_cv": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether a CV was stored with the application."
           },
           "cv_version": {
             "type": "integer",
+            "description": "The number of the current CV among the CVs the application has had, starting at 1; absent with no CV. A candidate\nwho applies again with a new CV moves it up by one, and the earlier CVs stay with the application.\n            ",
             "format": "int32",
             "nullable": true
           },
           "updated": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "On a 200, whether this request changed the application that already existed: a new CV, a new cover note, or\na closed application reopened. false on a 201, on a retry, and on a request whose only news is a phone\nnumber, which goes onto the candidate rather than the application.\n            "
           },
           "created_at": {
             "type": "string",
+            "description": "Time at which the application was made.",
             "format": "date-time"
           }
         }
       },
       "CandidateApplicationBody": {
         "type": "object",
+        "description": "The body of POST /v1/candidate_applications, as JSON or as the fields of a multipart/form-data request\nthat also carries the CV in a file field named cv. In a form, tags repeats or is comma-separated.\n            ",
         "additionalProperties": false,
         "properties": {
           "job_opening_id": {
             "type": "string",
+            "description": "Required: an open job opening, job_….",
             "nullable": true
           },
           "first_name": {
             "type": "string",
+            "description": "Required. Used when the candidate is new; an existing candidate, found by email, keeps the name Thrivea holds.",
             "nullable": true
           },
           "last_name": {
             "type": "string",
+            "description": "Required. Used when the candidate is new; an existing candidate keeps the name Thrivea holds.",
             "nullable": true
           },
           "email": {
             "type": "string",
+            "description": "Required. The candidate with this e-mail is reused. A second application to the same job is the first one, answered\nwith 200: a new CV becomes its current CV (the old one is kept), a new cover note and phone replace the old,\nand an application that was rejected, though not permanently, goes back to the first stage and the hiring team\nhears of it again. The same request sent twice changes nothing the second time.\n            ",
             "nullable": true
           },
           "phone": {
             "type": "string",
+            "description": "Optional. A number given here replaces the one the candidate had; an empty one keeps it.",
             "nullable": true
           },
           "cover_note": {
             "type": "string",
+            "description": "What the candidate wrote, and any form answers with no field of their own.",
             "nullable": true
           },
           "tags": {
             "type": "array",
+            "description": "Tag names, e.g. #frontend-engineer: found by name, created when missing, added to the candidate's own.",
             "nullable": true,
             "items": {
               "type": "string"
@@ -5456,6 +5689,7 @@
           },
           "external_ref": {
             "type": "string",
+            "description": "Your id for the submission. Stored on the application.",
             "nullable": true
           }
         }
@@ -5463,100 +5697,146 @@
       "CostCenterListResponse": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "object"
+        ],
         "properties": {
           "object": {
             "type": "string",
-            "nullable": true
+            "description": "String representing the object's type. Value is \"list\".",
+            "nullable": false,
+            "example": "list",
+            "enum": [
+              "list"
+            ]
           },
           "url": {
             "type": "string",
+            "description": "URL of this list resource.",
             "nullable": true
           },
           "data": {
             "type": "array",
+            "description": "The cost centers on this page.",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/CostCenter"
             }
           },
           "has_more": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "True if there are more cost centers after this page."
           }
         }
       },
       "CostCenter": {
         "type": "object",
+        "description": "A cost center: a code that job positions are charged to.",
         "additionalProperties": false,
         "required": [
-          "id"
+          "id",
+          "object",
+          "object",
+          "object",
+          "object",
+          "object"
         ],
         "properties": {
           "object": {
             "type": "string",
-            "nullable": true
+            "description": "String representing the object's type. Value is \"cost_center\".",
+            "nullable": false,
+            "example": "cost_center",
+            "enum": [
+              "cost_center"
+            ]
           },
           "id": {
             "type": "string",
-            "format": "guid",
-            "minLength": 1
+            "description": "Unique identifier for the cost center, e.g. cc_01h2xcejqtf2nbrexx3vqjhp41.",
+            "pattern": "^cc_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "example": "cc_01k6gv5gymfsfrn6rc3mq3yjjv"
           },
           "code": {
             "type": "string",
+            "description": "The cost center's code, at most 20 characters.",
             "nullable": true
           },
           "job_position_ids": {
             "type": "array",
+            "description": "The job positions charged to this cost center.",
             "nullable": true,
+            "example": [
+              "pos_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^pos_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "pos_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "active": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether the cost center is in use."
           },
           "created_at": {
             "type": "string",
+            "description": "Time at which the cost center was created.",
             "format": "date-time"
           },
           "updated_at": {
             "type": "string",
+            "description": "Time at which the cost center last changed; equal to created_at until it does.",
             "format": "date-time"
           }
         }
       },
       "CreateCostCenterRequest": {
         "type": "object",
+        "description": "The body of POST /v1/cost_centers.",
         "additionalProperties": false,
         "properties": {
           "code": {
             "type": "string",
+            "description": "The cost center's code, at most 20 characters.",
             "nullable": true
           },
           "job_position_ids": {
             "type": "array",
+            "description": "The job positions charged to it.",
             "nullable": true,
+            "example": [
+              "pos_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^pos_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "pos_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           }
         }
       },
       "UpdateCostCenterRequest": {
         "type": "object",
+        "description": "The body of PATCH /v1/cost_centers/{id}. A field left out keeps its value.",
         "additionalProperties": false,
         "properties": {
           "code": {
             "type": "string",
+            "description": "The cost center's new code.",
             "nullable": true
           },
           "job_position_ids": {
             "type": "array",
+            "description": "The whole list of job positions charged to it; it replaces the list it had.",
             "nullable": true,
+            "example": [
+              "pos_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^pos_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "pos_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           }
         }
@@ -5564,80 +5844,116 @@
       "EmployeeListResponse": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "object"
+        ],
         "properties": {
           "object": {
             "type": "string",
-            "nullable": true
+            "description": "String representing the object's type. Value is \"list\".",
+            "nullable": false,
+            "example": "list",
+            "enum": [
+              "list"
+            ]
           },
           "url": {
             "type": "string",
+            "description": "URL of this list resource",
             "nullable": true
           },
           "data": {
             "type": "array",
+            "description": "List of employees",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/Employee"
             }
           },
           "has_more": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "True if there are more items available on this page"
           }
         }
       },
       "Employee": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "object",
+          "object",
+          "object"
+        ],
         "properties": {
           "id": {
             "type": "string",
-            "format": "guid"
+            "description": "Unique identifier for the employee, e.g. emp_01h2xcejqtf2nbrexx3vqjhp41.\n            ",
+            "pattern": "^emp_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "example": "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
           },
           "object": {
             "type": "string",
-            "nullable": true
+            "description": "String representing the object's type. Value is \"employee\".\n            ",
+            "nullable": false,
+            "example": "employee",
+            "enum": [
+              "employee"
+            ]
           },
           "first_name": {
             "type": "string",
+            "description": "First name of the employee\n            ",
             "nullable": true
           },
           "middle_name": {
             "type": "string",
+            "description": "Middle name of the employee, if any\n            ",
             "nullable": true
           },
           "last_name": {
             "type": "string",
+            "description": "Last name of the employee\n            ",
             "nullable": true
           },
           "display_name": {
             "type": "string",
+            "description": "Display name of the employee\n            ",
             "nullable": true
           },
           "email_address": {
             "type": "string",
+            "description": "Email address of the employee\n            ",
             "nullable": true
           },
           "profile_picture_url": {
             "type": "string",
+            "description": "URL of the employee's profile picture, if any\n            ",
             "nullable": true
           },
           "birth_date": {
             "type": "string",
+            "description": "Birthdate of the employee, if available\n            ",
             "format": "date-time",
             "nullable": true
           },
           "profile_cover_picture_url": {
             "type": "string",
+            "description": "URL of the employee's profile cover picture, if any\n            ",
             "nullable": true
           },
           "status": {
-            "$ref": "#/components/schemas/EmployeeStatus"
+            "description": "Current status of the employee\n            ",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/EmployeeStatus"
+              }
+            ]
           }
         }
       },
       "EmployeeStatus": {
         "type": "integer",
-        "description": "",
+        "description": "Represents the current status of an employee in the system",
         "x-enumNames": [
           "Invited",
           "Active",
@@ -5654,86 +5970,119 @@
       "JobOpeningListResponse": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "object"
+        ],
         "properties": {
           "object": {
             "type": "string",
-            "nullable": true
+            "description": "String representing the object's type. Value is \"list\".",
+            "nullable": false,
+            "example": "list",
+            "enum": [
+              "list"
+            ]
           },
           "url": {
             "type": "string",
+            "description": "URL of this list resource.",
             "nullable": true
           },
           "data": {
             "type": "array",
+            "description": "The job openings on this page.",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/JobOpening"
             }
           },
           "has_more": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "True if there are more job openings after this page."
           }
         }
       },
       "JobOpening": {
         "type": "object",
+        "description": "A job opening, as another system needs it to attach applications: no hiring team, no candidate counts, no pipeline.\n            ",
         "additionalProperties": false,
         "required": [
-          "id"
+          "id",
+          "object",
+          "object",
+          "object",
+          "object"
         ],
         "properties": {
           "object": {
             "type": "string",
-            "nullable": true
+            "description": "String representing the object's type. Value is \"job_opening\".",
+            "nullable": false,
+            "example": "job_opening",
+            "enum": [
+              "job_opening"
+            ]
           },
           "id": {
             "type": "string",
-            "format": "guid",
-            "minLength": 1
+            "description": "Unique identifier, e.g. job_01h2xcejqtf2nbrexx3vqjhp41.",
+            "pattern": "^job_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "example": "job_01k6gv5gymfsfrn6rc3mq3yjjv"
           },
           "title": {
             "type": "string",
+            "description": "The job's title.",
             "nullable": true
           },
           "status": {
             "type": "string",
+            "description": "open, closed or archived. Applications are accepted only while it is open.",
             "nullable": true
           },
           "workplace_type": {
             "type": "string",
+            "description": "onsite, remote or hybrid.",
             "nullable": true
           },
           "published": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether the job is on the careers page. A job created through the API is not, until a recruiter publishes it."
           },
           "external_ref": {
             "type": "string",
+            "description": "The id your system gave the job when it created it, if it did.",
             "nullable": true
           },
           "created_at": {
             "type": "string",
+            "description": "Time at which the job was created.",
             "format": "date-time"
           }
         }
       },
       "CreateJobOpeningBody": {
         "type": "object",
+        "description": "The body of POST /v1/job_openings.",
         "additionalProperties": false,
         "properties": {
           "title": {
             "type": "string",
+            "description": "Required.",
             "nullable": true
           },
           "description": {
             "type": "string",
+            "description": "Plain text or basic HTML; may be the ad's summary and a link to its page.",
             "nullable": true
           },
           "workplace_type": {
             "type": "string",
+            "description": "Required: onsite, remote or hybrid.",
             "nullable": true
           },
           "external_ref": {
             "type": "string",
+            "description": "Your id for the job. Sending the same one again returns the job already created, never a second one.",
             "nullable": true
           }
         }
@@ -5741,24 +6090,35 @@
       "OrgUnitListResponse": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "object"
+        ],
         "properties": {
           "object": {
             "type": "string",
-            "nullable": true
+            "description": "String representing the object's type. Value is \"list\".",
+            "nullable": false,
+            "example": "list",
+            "enum": [
+              "list"
+            ]
           },
           "url": {
             "type": "string",
+            "description": "URL of this list resource",
             "nullable": true
           },
           "data": {
             "type": "array",
+            "description": "List of org units",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/OrgUnit"
             }
           },
           "has_more": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "True if there are more items available on this page"
           }
         }
       },
@@ -5767,67 +6127,106 @@
         "additionalProperties": false,
         "required": [
           "id",
-          "employees_criteria"
+          "employees_criteria",
+          "object",
+          "object",
+          "object",
+          "object",
+          "object"
         ],
         "properties": {
           "id": {
             "type": "string",
-            "format": "guid",
-            "minLength": 1
+            "description": "Unique identifier for the org unit, e.g. orgu_01h2xcejqtf2nbrexx3vqjhp41.\n            ",
+            "pattern": "^orgu_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "example": "orgu_01k6gv5gymfsfrn6rc3mq3yjjv"
           },
           "object": {
             "type": "string",
-            "nullable": true
+            "description": "String representing the object's type. Value is \"org_unit\".\n            ",
+            "nullable": false,
+            "example": "org_unit",
+            "enum": [
+              "org_unit"
+            ]
           },
           "name": {
             "type": "string",
+            "description": "Name of the org unit\n            ",
             "nullable": true
           },
           "description": {
             "type": "string",
+            "description": "Description of the org unit\n            ",
             "nullable": true
           },
           "org_unit_type_ids": {
             "type": "array",
+            "description": "IDs of the org unit types this org unit belongs to\n            ",
             "nullable": true,
+            "example": [
+              "orgut_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^orgut_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "orgut_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "parent_org_unit_ids": {
             "type": "array",
+            "description": "IDs of the parent org units\n            ",
             "nullable": true,
+            "example": [
+              "orgu_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^orgu_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "orgu_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "sibling_org_unit_ids": {
             "type": "array",
+            "description": "IDs of the sibling org units\n            ",
             "nullable": true,
+            "example": [
+              "orgu_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^orgu_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "orgu_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "manager_ids": {
             "type": "array",
+            "description": "Who manages this org unit, emp_ ids. Read-only: it comes from each person's work history.\n            ",
             "nullable": true,
+            "example": [
+              "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^emp_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "employee_ids": {
             "type": "array",
+            "description": "Who belongs to this org unit, emp_ ids. Read-only: it comes from each person's work history.\n            ",
             "nullable": true,
+            "example": [
+              "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^emp_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "managers_criteria": {
+            "description": "The rule behind manager_ids, kept for compatibility: by_employee_ids rules derived from work history.\n            ",
             "nullable": true,
             "oneOf": [
               {
@@ -5836,49 +6235,70 @@
             ]
           },
           "employees_criteria": {
-            "$ref": "#/components/schemas/PeopleCriteriaResource"
+            "description": "The rule behind employee_ids, kept for compatibility: by_employee_ids rules derived from work history.\n            ",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PeopleCriteriaResource"
+              }
+            ]
           },
           "status": {
-            "$ref": "#/components/schemas/OrgUnitStatus"
+            "description": "Current status of the org unit\n            ",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/OrgUnitStatus"
+              }
+            ]
           },
           "active_from": {
             "type": "string",
+            "description": "Date when the org unit becomes active (optional, UTC)\n            ",
             "format": "date-time",
             "nullable": true
           },
           "active_to": {
             "type": "string",
+            "description": "Date when the org unit should be archived (optional, UTC)\n            ",
             "format": "date-time",
             "nullable": true
           },
           "created_at": {
             "type": "string",
+            "description": "Time at which the org unit was created\n            ",
             "format": "date-time"
           },
           "created_by": {
             "type": "string",
-            "format": "guid"
+            "description": "ID of the user who created the org unit\n            ",
+            "pattern": "^emp_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "example": "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
           },
           "updated_at": {
             "type": "string",
+            "description": "Time at which the org unit was last updated\n            ",
             "format": "date-time"
           },
           "updated_by": {
             "type": "string",
-            "format": "guid"
+            "description": "ID of the user who last updated the org unit\n            ",
+            "pattern": "^emp_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "example": "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
           },
           "external_code": {
             "type": "string",
+            "description": "Non-unique external code for the org unit (e.g. a department or cost-centre code).\nUnlike public_id, this value does not need to be unique across org units.\n            ",
             "nullable": true
           }
         }
       },
       "PeopleCriteriaResource": {
         "type": "object",
+        "description": "Who manages, or who belongs to, an org unit: a rule, not a list. The people matched by any\nrule in Includes, minus the people matched by any rule in Excludes.\n            ",
         "additionalProperties": false,
         "properties": {
           "includes": {
             "type": "array",
+            "description": "The rules a person must match one of to be in the group.",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/PeopleCriterionResource"
@@ -5886,6 +6306,7 @@
           },
           "excludes": {
             "type": "array",
+            "description": "The rules that take a person out of the group even when an include matches.",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/PeopleCriterionResource"
@@ -5895,46 +6316,62 @@
       },
       "PeopleCriterionResource": {
         "type": "object",
+        "description": "One rule. Type names it (the snake_case tokens in OrgUnitCriteria) and the one field\nthat rule takes carries its argument; the fields the rule does not take are left out of the JSON. Ids are the\nprefixed ids the rest of /v1 uses where a prefix is registered for the kind.\n            ",
         "additionalProperties": false,
         "properties": {
           "type": {
             "type": "string",
+            "description": "The rule: one of everyone, none, by_employee_ids, is_in_org_unit, is_org_unit_manager, has_job_position, works_at_same_site, is_in_permission_group, has_permission, has_erb_scalar_field, reports_to, is_direct_manager, is_indirect_manager, is_self, is_buddy, is_hrbp or is_it_admin. The field the rule needs is set beside it; treat a type you do not know as one added later.",
             "nullable": true
           },
           "employee_ids": {
             "type": "array",
+            "description": "by_employee_ids: the people named.",
             "nullable": true,
+            "example": [
+              "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^emp_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "org_unit_id": {
             "type": "string",
-            "format": "guid",
-            "nullable": true
+            "description": "is_in_org_unit: the members of that unit.",
+            "pattern": "^orgu_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "nullable": true,
+            "example": "orgu_01k6gv5gymfsfrn6rc3mq3yjjv"
           },
           "job_position_id": {
             "type": "string",
-            "format": "guid",
-            "nullable": true
+            "description": "has_job_position: the people in that job position.",
+            "pattern": "^pos_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "nullable": true,
+            "example": "pos_01k6gv5gymfsfrn6rc3mq3yjjv"
           },
           "site_id": {
             "type": "string",
-            "format": "guid",
-            "nullable": true
+            "description": "works_at_same_site: the people at that site.",
+            "pattern": "^site_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "nullable": true,
+            "example": "site_01k6gv5gymfsfrn6rc3mq3yjjv"
           },
           "permission_group_id": {
             "type": "string",
+            "description": "is_in_permission_group: the members of that permission group. No prefix is registered for groups, so a plain GUID.",
             "format": "guid",
             "nullable": true
           },
           "permission_name": {
             "type": "string",
+            "description": "has_permission: the people who hold that permission, by its stored name.",
             "nullable": true
           },
           "erb_field_id": {
             "type": "string",
+            "description": "has_erb_scalar_field: the people with a value in that employee record field. No prefix is registered for fields, so a plain GUID.",
             "format": "guid",
             "nullable": true
           }
@@ -5942,7 +6379,7 @@
       },
       "OrgUnitStatus": {
         "type": "integer",
-        "description": "",
+        "description": "Represents the current status of an organizational unit in the system",
         "x-enumNames": [
           "Active",
           "Archived",
@@ -5962,53 +6399,81 @@
         "properties": {
           "name": {
             "type": "string",
+            "description": "Name of the org unit",
             "nullable": true
           },
           "description": {
             "type": "string",
+            "description": "Description of the org unit",
             "nullable": true
           },
           "org_unit_type_ids": {
             "type": "array",
+            "description": "IDs of the org unit types this org unit belongs to",
             "nullable": true,
+            "example": [
+              "orgut_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^orgut_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "orgut_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "parent_org_unit_ids": {
             "type": "array",
+            "description": "IDs of the parent org units",
             "nullable": true,
+            "example": [
+              "orgu_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^orgu_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "orgu_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "sibling_org_unit_ids": {
             "type": "array",
+            "description": "IDs of the sibling org units",
             "nullable": true,
+            "example": [
+              "orgu_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^orgu_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "orgu_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "manager_ids": {
             "type": "array",
+            "description": "Refused: who manages an org unit comes from each person's work history. Sending it is a 400 naming the field.",
             "nullable": true,
+            "example": [
+              "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^emp_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "employee_ids": {
             "type": "array",
+            "description": "Refused: who belongs to an org unit comes from each person's work history. Sending it is a 400 naming the field.",
             "nullable": true,
+            "example": [
+              "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^emp_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "managers_criteria": {
+            "description": "Refused: who manages an org unit comes from each person's work history. Sending it is a 400 naming the field.",
             "nullable": true,
             "oneOf": [
               {
@@ -6017,6 +6482,7 @@
             ]
           },
           "employees_criteria": {
+            "description": "Refused: who belongs to an org unit comes from each person's work history. Sending it is a 400 naming the field.",
             "nullable": true,
             "oneOf": [
               {
@@ -6026,20 +6492,24 @@
           },
           "public_id": {
             "type": "string",
+            "description": "Public id of the org unit",
             "nullable": true
           },
           "active_from": {
             "type": "string",
+            "description": "Date when the org unit becomes active (optional, UTC). If not specified or in the past, the org unit is immediately active.",
             "format": "date-time",
             "nullable": true
           },
           "active_to": {
             "type": "string",
+            "description": "Date when the org unit should be archived (optional, UTC). If not specified, the org unit never auto-archives.",
             "format": "date-time",
             "nullable": true
           },
           "external_code": {
             "type": "string",
+            "description": "External code of the org unit",
             "nullable": true
           }
         }
@@ -6055,53 +6525,81 @@
         "properties": {
           "name": {
             "type": "string",
+            "description": "Name of the org unit",
             "minLength": 1
           },
           "description": {
             "type": "string",
+            "description": "Description of the org unit",
             "nullable": true
           },
           "org_unit_type_ids": {
             "type": "array",
+            "description": "IDs of the org unit types this org unit belongs to",
             "minItems": 1,
+            "example": [
+              "orgut_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^orgut_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "orgut_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "parent_org_unit_ids": {
             "type": "array",
+            "description": "IDs of the parent org units",
             "nullable": true,
+            "example": [
+              "orgu_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^orgu_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "orgu_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "sibling_org_unit_ids": {
             "type": "array",
+            "description": "IDs of the sibling org units",
             "nullable": true,
+            "example": [
+              "orgu_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^orgu_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "orgu_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "manager_ids": {
             "type": "array",
+            "description": "Refused: who manages an org unit comes from each person's work history. Sending it is a 400 naming the field.",
             "nullable": true,
+            "example": [
+              "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^emp_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "employee_ids": {
             "type": "array",
+            "description": "Refused: who belongs to an org unit comes from each person's work history. Sending it is a 400 naming the field.",
             "minItems": 1,
+            "example": [
+              "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
+            ],
             "items": {
               "type": "string",
-              "format": "guid"
+              "pattern": "^emp_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+              "example": "emp_01k6gv5gymfsfrn6rc3mq3yjjv"
             }
           },
           "managers_criteria": {
+            "description": "Refused: who manages an org unit comes from each person's work history. Sending it is a 400 naming the field.",
             "nullable": true,
             "oneOf": [
               {
@@ -6110,6 +6608,7 @@
             ]
           },
           "employees_criteria": {
+            "description": "Refused: who belongs to an org unit comes from each person's work history. Sending it is a 400 naming the field.",
             "nullable": true,
             "oneOf": [
               {
@@ -6118,24 +6617,33 @@
             ]
           },
           "status": {
-            "$ref": "#/components/schemas/OrgUnitStatus"
+            "description": "Status of the organizational unit, indicating whether it is active or archived.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/OrgUnitStatus"
+              }
+            ]
           },
           "public_id": {
             "type": "string",
+            "description": "Public id of the org unit",
             "nullable": true
           },
           "active_from": {
             "type": "string",
+            "description": "Date when the org unit becomes active (optional, UTC). If not specified or in the past, the org unit is immediately active.",
             "format": "date-time",
             "nullable": true
           },
           "active_to": {
             "type": "string",
+            "description": "Date when the org unit should be archived (optional, UTC). If not specified, the org unit never auto-archives.",
             "format": "date-time",
             "nullable": true
           },
           "external_code": {
             "type": "string",
+            "description": "External code of the org unit, used as an optional external or business identifier.",
             "nullable": true
           }
         }
@@ -6159,21 +6667,33 @@
       },
       "OrgUnitTypeListResponse": {
         "type": "object",
+        "description": "A page of org unit types.",
         "additionalProperties": false,
+        "required": [
+          "object"
+        ],
         "properties": {
           "object": {
             "type": "string",
-            "nullable": true
+            "description": "String representing the object's type. Value is \"list\".",
+            "nullable": false,
+            "example": "list",
+            "enum": [
+              "list"
+            ]
           },
           "url": {
             "type": "string",
+            "description": "URL of this list resource.",
             "nullable": true
           },
           "has_more": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "True if there are more types after this page."
           },
           "data": {
             "type": "array",
+            "description": "The types on this page.",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/OrgUnitType"
@@ -6183,29 +6703,45 @@
       },
       "OrgUnitType": {
         "type": "object",
+        "description": "A kind of org unit, such as Department or Team, with the colour the org chart draws it in.",
         "additionalProperties": false,
         "required": [
-          "hex_color"
+          "hex_color",
+          "object",
+          "object",
+          "object",
+          "object",
+          "object"
         ],
         "properties": {
           "id": {
             "type": "string",
-            "format": "guid"
+            "description": "Unique identifier, e.g. orgut_01h2x….",
+            "pattern": "^orgut_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "example": "orgut_01k6gv5gymfsfrn6rc3mq3yjjv"
           },
           "object": {
             "type": "string",
-            "nullable": true
+            "description": "String representing the object's type. Value is \"org_unit_type\".",
+            "nullable": false,
+            "example": "org_unit_type",
+            "enum": [
+              "org_unit_type"
+            ]
           },
           "name": {
             "type": "string",
+            "description": "The type's name.",
             "nullable": true
           },
           "description": {
             "type": "string",
+            "description": "What the type is for; empty when none was given.",
             "nullable": true
           },
           "hex_color": {
             "type": "string",
+            "description": "The colour the org chart uses for units of this type, as a hex code such as #4F46E5.",
             "minLength": 1
           },
           "status": {
@@ -6213,17 +6749,19 @@
           },
           "created_at": {
             "type": "string",
+            "description": "Time at which the type was created.",
             "format": "date-time"
           },
           "updated_at": {
             "type": "string",
+            "description": "Time of the last change; the creation time until the first one.",
             "format": "date-time"
           }
         }
       },
       "OrgUnitTypeStatus": {
         "type": "integer",
-        "description": "",
+        "description": "Represents the current status of an organizational unit type in the system",
         "x-enumNames": [
           "Active",
           "Archived"
@@ -6235,60 +6773,85 @@
       },
       "CreateOrgUnitTypeRequest": {
         "type": "object",
+        "description": "The body of POST /v1/org_unit_types.",
         "additionalProperties": false,
         "properties": {
           "name": {
             "type": "string",
+            "description": "Required. The type's name.",
             "nullable": true
           },
           "description": {
             "type": "string",
+            "description": "Optional. What the type is for.",
             "nullable": true
           },
           "hex_color": {
             "type": "string",
+            "description": "Required. A hex colour code such as #4F46E5.",
             "nullable": true
           }
         }
       },
       "UpdateOrgUnitTypeRequest": {
         "type": "object",
+        "description": "The body of PATCH /v1/org_unit_types/{id}. A field left out keeps its current value.",
         "additionalProperties": false,
         "properties": {
           "name": {
             "type": "string",
+            "description": "The new name; cannot be empty.",
             "nullable": true
           },
           "description": {
             "type": "string",
+            "description": "The new description.",
             "nullable": true
           },
           "hex_color": {
             "type": "string",
+            "description": "The new hex colour code, such as #4F46E5.",
             "nullable": true
           },
           "status": {
-            "$ref": "#/components/schemas/OrgUnitTypeStatus"
+            "description": "1 (active) or 2 (archived); left out, the status stays.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/OrgUnitTypeStatus"
+              }
+            ]
           }
         }
       },
       "WebhookEndpointListResponse": {
         "type": "object",
+        "description": "A page of webhook endpoints.",
         "additionalProperties": false,
+        "required": [
+          "object"
+        ],
         "properties": {
           "object": {
             "type": "string",
-            "nullable": true
+            "description": "String representing the object's type. Value is \"list\".",
+            "nullable": false,
+            "example": "list",
+            "enum": [
+              "list"
+            ]
           },
           "url": {
             "type": "string",
+            "description": "URL of this list resource.",
             "nullable": true
           },
           "has_more": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "True if there are more endpoints after this page."
           },
           "data": {
             "type": "array",
+            "description": "The endpoints on this page.",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/WebhookEndpoint"
@@ -6298,29 +6861,48 @@
       },
       "WebhookEndpoint": {
         "type": "object",
+        "description": "An HTTPS address Thrivea posts events to, and which events it receives.",
         "additionalProperties": false,
+        "required": [
+          "object",
+          "object",
+          "object",
+          "object",
+          "object"
+        ],
         "properties": {
           "id": {
             "type": "string",
-            "format": "guid"
+            "description": "Unique identifier, e.g. we_01h2x….",
+            "pattern": "^we_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "example": "we_01k6gv5gymfsfrn6rc3mq3yjjv"
           },
           "object": {
             "type": "string",
-            "nullable": true
+            "description": "String representing the object's type. Value is \"webhook_endpoint\".",
+            "nullable": false,
+            "example": "webhook_endpoint",
+            "enum": [
+              "webhook_endpoint"
+            ]
           },
           "url": {
             "type": "string",
+            "description": "The https address events are posted to. Its host must resolve to public addresses only, checked again before every delivery.",
             "nullable": true
           },
           "description": {
             "type": "string",
+            "description": "What the endpoint is for, for your own records; may be null.",
             "nullable": true
           },
           "enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether events are sent to it. Thrivea sets it to false when the endpoint answers 410 Gone."
           },
           "event_types": {
             "type": "array",
+            "description": "The event types it receives, from GET /v1/webhook_endpoints/event_types.",
             "nullable": true,
             "items": {
               "type": "string"
@@ -6328,10 +6910,12 @@
           },
           "created_at": {
             "type": "string",
+            "description": "Time at which the endpoint was created.",
             "format": "date-time"
           },
           "updated_at": {
             "type": "string",
+            "description": "Time of the last change; null until the first one.",
             "format": "date-time",
             "nullable": true
           }
@@ -6339,49 +6923,59 @@
       },
       "CreateWebhookEndpointRequest": {
         "type": "object",
+        "description": "The body of POST /v1/webhook_endpoints. The answer carries the signing secret once, in the Thrivea-Webhook-Secret header.",
         "additionalProperties": false,
         "properties": {
           "url": {
             "type": "string",
+            "description": "Required. An https address whose host resolves to public addresses only; a private, loopback, link-local or metadata address is a 400.",
             "nullable": true
           },
           "description": {
             "type": "string",
+            "description": "What the endpoint is for, for your own records.",
             "nullable": true
           },
           "event_types": {
             "type": "array",
+            "description": "Required, one or more types from GET /v1/webhook_endpoints/event_types. An unknown type is a 400; an employee.* type asked for by an integration key is a 403.",
             "nullable": true,
             "items": {
               "type": "string"
             }
           },
           "enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether to send events to it. Read as true when left out."
           }
         }
       },
       "UpdateWebhookEndpointRequest": {
         "type": "object",
+        "description": "The body of PATCH /v1/webhook_endpoints/{id}. It replaces the endpoint's URL, description, event types and enabled, so send all four.",
         "additionalProperties": false,
         "properties": {
           "url": {
             "type": "string",
+            "description": "Required. An https address whose host resolves to public addresses only; a private, loopback, link-local or metadata address is a 400.",
             "nullable": true
           },
           "description": {
             "type": "string",
+            "description": "What the endpoint is for, for your own records.",
             "nullable": true
           },
           "event_types": {
             "type": "array",
+            "description": "Required, one or more types from GET /v1/webhook_endpoints/event_types. An unknown type is a 400; an employee.* type asked for by an integration key is a 403.",
             "nullable": true,
             "items": {
               "type": "string"
             }
           },
           "enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether to send events to it. Read as true when left out."
           }
         }
       },
