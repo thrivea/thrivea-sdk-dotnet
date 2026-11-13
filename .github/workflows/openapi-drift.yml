@@ -27,8 +27,8 @@ jobs:
       - name: Compare with the vendored copy
         id: diff
         run: |
-          jq -S 'del(.servers)' openapi/thrivea-v1.openapi.json > vendored.norm.json
-          jq -S 'del(.servers)' live.json > live.norm.json
+          jq -S 'del(.servers, ."x-generator")' openapi/thrivea-v1.openapi.json > vendored.norm.json
+          jq -S 'del(.servers, ."x-generator")' live.json > live.norm.json
           if diff -u vendored.norm.json live.norm.json > drift.diff; then
             echo "drift=false" >> "$GITHUB_OUTPUT"
           else
